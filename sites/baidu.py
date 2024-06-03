@@ -11,7 +11,7 @@ from .crawler import Crawler
 
 class BaiduNewsCrawler(Crawler):
     # 返回news_list
-    def fetch(self) -> list[News]:
+    def fetch(self, date_str) -> list[News]:
 
         url = "https://top.baidu.com/api/board?platform=wise&tab=realtime"
 
@@ -36,7 +36,7 @@ class BaiduNewsCrawler(Crawler):
             result.append(news)
             cache_list.append(news.to_cache_json())
 
-        cache._hset(self.date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+        cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
 
     def crawler_name(self):

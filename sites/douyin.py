@@ -12,7 +12,7 @@ from .crawler import Crawler
 
 class DouYinCrawler(Crawler):
 
-    def fetch(self):
+    def fetch(self, date_str):
         token_url = "https://www.douyin.com/passport/general/login_guiding_strategy/?aid=6383"
         hot_url = "https://www.douyin.com/aweme/v1/web/hot/search/list/?device_platform=webapp&aid=6383&channel=channel_pc_web&detail_list=1&round_trip_time=50"
 
@@ -48,7 +48,7 @@ class DouYinCrawler(Crawler):
             result.append(news)
             cache_list.append(news.to_cache_json())
 
-        cache._hset(self.date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+        cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
 
 

@@ -10,7 +10,7 @@ from .crawler import Crawler
 
 
 class TsKrCrawler(Crawler):
-    def fetch(self):
+    def fetch(self, date_str):
         url = "https://gateway.36kr.com/api/mis/nav/home/nav/rank/hot"
 
         header = self.header.copy()
@@ -47,7 +47,7 @@ class TsKrCrawler(Crawler):
             result.append(news)
             cache_list.append(news.to_cache_json())
 
-        cache._hset(self.date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+        cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
 
     def crawler_name(self):

@@ -15,7 +15,7 @@ class JinRiTouTiaoCrawler(Crawler):
     今日头条
     """
 
-    def fetch(self):
+    def fetch(self, date_str):
         url = "https://www.toutiao.com/hot-event/hot-board/?origin=toutiao_pc"
         header = self.header.copy()
         header.update({
@@ -47,7 +47,7 @@ class JinRiTouTiaoCrawler(Crawler):
             result.append(news)
             cache_list.append(news.to_cache_json())
 
-        cache._hset(self.date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+        cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
 
     def crawler_name(self):

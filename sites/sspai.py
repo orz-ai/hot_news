@@ -9,7 +9,7 @@ from .crawler import Crawler
 
 
 class ShaoShuPaiCrawler(Crawler):
-    def fetch(self):
+    def fetch(self, date_str):
         url = "https://sspai.com/api/v1/article/tag/page/get?limit=50&offset=0&tag=%E7%83%AD%E9%97%A8%E6%96%87%E7%AB%A0&released=false"
         resp = requests.get(url=url, params=self.header, verify=False, timeout=self.timeout)
         if resp.status_code != 200:
@@ -33,7 +33,7 @@ class ShaoShuPaiCrawler(Crawler):
             result.append(news)
             cache_list.append(news.to_cache_json())
 
-        cache._hset(self.date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+        cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
 
     def crawler_name(self):

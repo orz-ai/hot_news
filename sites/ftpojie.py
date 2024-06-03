@@ -12,7 +12,7 @@ from .crawler import Crawler
 
 class FtPoJieCrawler(Crawler):
 
-    def fetch(self):
+    def fetch(self, date_str):
         url = "https://www.52pojie.cn/forum.php?mod=guide&view=hot"
 
         html = requests.get(url=url, headers=self.header, verify=False, timeout=self.timeout)
@@ -41,7 +41,7 @@ class FtPoJieCrawler(Crawler):
             result.append(news)
             cache_list.append(news.to_cache_json())
 
-        cache._hset(self.date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+        cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
 
     def crawler_name(self):

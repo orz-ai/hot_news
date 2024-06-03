@@ -12,7 +12,7 @@ from .crawler import Crawler
 
 class VtexCrawler(Crawler):
 
-    def fetch(self):
+    def fetch(self, date_str):
         url = "https://www.v2ex.com/?tab=hot"
         html = requests.get(url=url, headers=self.header, verify=False, timeout=self.timeout)
         html.encoding = "utf-8"
@@ -38,7 +38,7 @@ class VtexCrawler(Crawler):
             result.append(news)
             cache_list.append(news.to_cache_json())
 
-        cache._hset(self.date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+        cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
 
     def crawler_name(self):

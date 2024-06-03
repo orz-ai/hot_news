@@ -11,7 +11,7 @@ from .crawler import Crawler
 
 class JueJinCrawler(Crawler):
 
-    def fetch(self):
+    def fetch(self, date_str):
         url = "https://api.juejin.cn/content_api/v1/content/article_rank?category_id=1&type=hot"
 
         resp = requests.get(url=url, params=self.header, verify=False, timeout=self.timeout)
@@ -33,7 +33,7 @@ class JueJinCrawler(Crawler):
             result.append(news)
             cache_list.append(news.to_cache_json())
 
-        cache._hset(self.date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+        cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
 
 

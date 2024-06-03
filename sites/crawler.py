@@ -19,13 +19,9 @@ class Crawler:
         "https": "http://127.0.0.1:7890"
     }
 
-    timezone = pytz.timezone('Asia/Shanghai')
-    now_time = datetime.now(timezone)
-    date_str = now_time.strftime("%Y-%m-%d")
-
     timeout = 2
 
-    def fetch(self):
+    def fetch(self, date_str):
         raise NotImplementedError("Subclasses must implement fetch method")
 
     def crawler_name(self):

@@ -10,7 +10,7 @@ from .crawler import Crawler
 
 class BilibiliCrawler(Crawler):
 
-    def fetch(self):
+    def fetch(self, date_str):
         url = "http://api.bilibili.com/x/web-interface/ranking/v2"
         header = self.header.copy()
         header["host"] = "api.bilibili.com"
@@ -36,7 +36,7 @@ class BilibiliCrawler(Crawler):
             result.append(news)
             cache_list.append(news.to_cache_json())
 
-        cache._hset(self.date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+        cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
 
     def crawler_name(self):

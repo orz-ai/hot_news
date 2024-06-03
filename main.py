@@ -1,6 +1,8 @@
 import json
 import time
+from datetime import datetime
 
+import pytz
 import uvicorn
 from apscheduler.schedulers.background import BackgroundScheduler
 from fastapi import FastAPI
@@ -19,9 +21,14 @@ factory = CrawlerRegister().register()
 @_scheduler.scheduled_job('interval', id='crawler_logic', seconds=1800)
 def crawlers_logic():
     retry_crawler = []
+
+    timezone = pytz.timezone('Asia/Shanghai')
+    now_time = datetime.now(timezone)
+    date_str = now_time.strftime("%Y-%m-%d")
+
     for crawler_name, crawler in factory.items():
         try:
-            news_list = crawler.fetch()
+            news_list = crawler.fetch(date_str)
         except Exception as e:
             print(e)
             retry_crawler.append(crawler_name)
@@ -37,7 +44,7 @@ def crawlers_logic():
     for crawler_name in retry_crawler:
         crawler = factory[crawler_name]
         try:
-            news_list = crawler.fetch()
+            news_list = crawler.fetch(date_str)
         except Exception as e:
             print(e)
             continue
@@ -58,10 +65,17 @@ def get_hot_news(date: str = time.strftime("%Y-%m-%d", time.localtime()), platfo
             "msg": "`platform` is required, valid platform: " + ", ".join(factory.keys())
         }
 
-    result = cache._hget(date, platform).decode("utf-8")
+    result = cache._hget(date, platform)
+    if result:
+        return {
+            "status": "200",
+            "data": json.loads(result.decode("utf-8")),
+            "msg": "success"
+        }
+
     return {
         "status": "200",
-        "data": json.loads(result),
+        "data": [],
         "msg": "success"
     }
 

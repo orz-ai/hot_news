@@ -11,7 +11,7 @@ from .crawler import Crawler
 
 class WeiboCrawler(Crawler):
 
-    def fetch(self):
+    def fetch(self, date_str):
         url = "https://weibo.com/ajax/side/hotSearch"
 
         resp = requests.get(url=url, params=self.header, verify=False, timeout=self.timeout)
@@ -32,7 +32,7 @@ class WeiboCrawler(Crawler):
             result.append(news)
             cache_list.append(news.to_cache_json())
 
-        cache._hset(self.date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+        cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
 
 

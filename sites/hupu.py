@@ -12,7 +12,7 @@ from .crawler import Crawler
 
 class HuPuCrawler(Crawler):
 
-    def fetch(self):
+    def fetch(self, date_str):
         url = "https://bbs.hupu.com/all-gambia"
         html = requests.get(url=url, headers=self.header, verify=False, timeout=self.timeout)
         html.encoding = "utf-8"
@@ -42,7 +42,7 @@ class HuPuCrawler(Crawler):
             result.append(news)
             cache_list.append(news.to_cache_json())
 
-        cache._hset(self.date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+        cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
 
     def crawler_name(self):
