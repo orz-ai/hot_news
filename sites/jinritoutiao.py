@@ -51,7 +51,7 @@ class JinRiTouTiaoCrawler(Crawler):
         return result
 
     def crawler_name(self):
-        return "bilibili"
+        return "jinritoutiao"
 
 
 
