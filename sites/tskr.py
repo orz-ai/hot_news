@@ -15,10 +15,10 @@ class TsKrCrawler(Crawler):
 
         header = self.header.copy()
         header.update({
-            "Host": "gateway.36kr.com",
-            "Origin": "https://m.36kr.com",
+            "host": "gateway.36kr.com",
+            "origin": "https://m.36kr.com",
             "Referer": "https://m.36kr.com/",
-            "User-Agent": "Mozilla/5.0 (Linux; Android 10; Redmi K30 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36",
+            "User-agent": "Mozilla/5.0 (Linux; Android 10; Redmi K30 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36",
             "content-type": "application/json;charset=UTF-8",
         })
 

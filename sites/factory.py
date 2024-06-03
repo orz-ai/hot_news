@@ -2,6 +2,7 @@ from .crawler import Crawler
 from .douyin import DouYinCrawler
 from .ftpojie import FtPoJieCrawler
 from .hupu import HuPuCrawler
+from .jinritoutiao import JinRiTouTiaoCrawler
 from .juejin import JueJinCrawler
 from .tieba import TieBaCrawler
 from .tskr import TsKrCrawler
@@ -32,6 +33,7 @@ class CrawlerRegister:
             "juejin": JueJinCrawler(),
             "douyin": DouYinCrawler(),
             "v2ex": VtexCrawler(),
+            "jinritoutiao": JinRiTouTiaoCrawler(),
         }
 
         return crawler_map

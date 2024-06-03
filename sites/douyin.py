@@ -29,8 +29,8 @@ class DouYinCrawler(Crawler):
         header.update({
             "cookie": f"passport_csrf_token={cookie};",
             "referer": "https://www.douyin.com/",
-            "Accept": "application/json",
-            "Accept-Encoding": "",
+            "accept": "application/json",
+            "accept-encoding": "",
         })
 
         hot_resp = requests.get(url=hot_url, headers=header, verify=False, timeout=self.timeout)

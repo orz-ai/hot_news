@@ -24,6 +24,7 @@ The Daily Hot News API provides access to real-time hot news data from various p
 	  - juejin
 	  - douyin
 	  - v2ex
+      - jinritoutiao
 
 - **Example Request**:
   ```shell

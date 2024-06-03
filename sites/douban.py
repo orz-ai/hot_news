@@ -17,16 +17,16 @@ class DouBanCrawler(Crawler):
 
         header = self.header.copy()
         header.update({
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-            "Accept-Encoding": "",
-            "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
-            "Host": "www.douban.com",
-            "Referer": "https://www.douban.com/group/explore",
-            "Sec-Fetch-Dest": "document",
-            "Sec-Fetch-Mode": "navigate",
-            "Sec-Fetch-Site": "same-origin",
-            "Sec-Fetch-User": "?1",
-            "Upgrade-Insecure-Requests": "1",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "accept-encoding": "",
+            "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
+            "host": "www.douban.com",
+            "referer": "https://www.douban.com/group/explore",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "same-origin",
+            "sec-fetch-user": "?1",
+            "upgrade-insecure-requests": "1",
         })
 
         html = requests.get(url=url, headers=header, verify=False, timeout=self.timeout)

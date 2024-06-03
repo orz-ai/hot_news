@@ -52,11 +52,11 @@ class BaiduNewsCrawler(Crawler):
         }
 
         header = {
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,"
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,"
                       "*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "Upgrade-Insecure-Requests": 1,
-            "Host": "www.baidu.com",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
+            "upgrade-insecure-requests": 1,
+            "host": "www.baidu.com",
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
                           "Chrome/86.0.4240.183 Safari/537.36"
         }
         html = requests.get(url=url, params=header, verify=False, proxies=proxies)
