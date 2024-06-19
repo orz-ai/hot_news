@@ -57,13 +57,16 @@ def crawlers_logic():
 
 
 @app.get("/dailynews/")
-def get_hot_news(date: str = time.strftime("%Y-%m-%d", time.localtime()), platform: str = None):
+def get_hot_news(date: str = None, platform: str = None):
     if platform not in factory.keys():
         return {
             "status": "404",
             "data": [],
             "msg": "`platform` is required, valid platform: " + ", ".join(factory.keys())
         }
+
+    if not date:
+        date = datetime.now(pytz.timezone('Asia/Shanghai')).strftime("%Y-%m-%d")
 
     result = cache._hget(date, platform)
     if result:
