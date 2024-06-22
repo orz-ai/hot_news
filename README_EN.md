@@ -71,6 +71,6 @@ The information provided by this API may not always be accurate or up-to-date. U
 ## Telegram Bot
 [Link](https://t.me/SpaceWatcherBot)
 
-You can use the bog directly or add it to your group.
+You can use the bot directly or add it to your group.
 
 If you want to deploy the bot by yourself, you should set the `TG_BOT_TOKEN` in the environment variables and then run the following command: `python3 news_tg_bot.py`
