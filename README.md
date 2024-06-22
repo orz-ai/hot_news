@@ -71,3 +71,5 @@
 
 ## Telegram机器人
 [链接](https://t.me/SpaceWatcherBot)
+
+你可以直接使用机器人或添加到你的群组中。如果你想自己部署，你需要在环境变量中设置好 `TG_BOT_TOKEN`，再执行下面的命令：`python3 news_tg_bot.py`
