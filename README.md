@@ -1,37 +1,39 @@
-# Daily Hot News API
+[English](README_EN.md)
 
-## Overview
+# 每日热点新闻 API
 
-The Daily Hot News API provides access to real-time hot news data from various platforms. The data is refreshed automatically about every half an hour. This API can be used to retrieve hot news headlines along with their URLs and scores.
+## 概述
 
-- **Base URL**: `https://orz.ai/dailynews/`
+每日热点新闻 API 提供来自多个平台的实时热点新闻数据。数据大约每半小时自动刷新一次。此 API 可用于检索热点新闻标题及其 URL 和评分。
 
-## Usage
+- **基础 URL**: `https://orz.ai/dailynews/`
 
-- **Method**: `GET`
-- **Parameters**:
-  - `platform`: Specify the platform. Supported platforms are:
-	  - baidu
-	  - shaoshupai
-	  - weibo
-	  - zhihu
-	  - 36kr
-	  - 52pojie
-	  - bilibili
-	  - douban
-	  - hupu
-	  - tieba
-	  - juejin
-	  - douyin
-	  - v2ex
-      - jinritoutiao
+## 使用方法
 
-- **Example Request**:
+- **方法**: `GET`
+- **参数**:
+  - `platform`: 指定平台。支持的平台有：
+    - baidu
+    - shaoshupai
+    - weibo
+    - zhihu
+    - 36kr
+    - 52pojie
+    - bilibili
+    - douban
+    - hupu
+    - tieba
+    - juejin
+    - douyin
+    - v2ex
+    - jinritoutiao
+
+- **请求示例**:
   ```shell
   GET https://orz.ai/dailynews/?platform=baidu
   ```
 
-- **Example Response**:
+- **响应示例**:
   ```json
   {
     "status": "200",
@@ -53,15 +55,15 @@ The Daily Hot News API provides access to real-time hot news data from various p
   }
   ```
 
-## Notes
+## 注意事项
 
-- This API is for legal use only. `Any illegal use is not supported` and is the responsibility of the user.
-- The data provided by this API is for informational purposes only and should not be used as a primary platform of news.
+- 此 API 仅供合法使用。`任何非法使用均不受支持`，且由用户自行负责。
+- 本 API 提供的数据仅供参考，不应作为新闻的主要来源。
 
-## Rate Limiting
+## 速率限制
 
-There is currently `no explicit rate limiting` on this API, but please use it responsibly to avoid overloading the server.
+目前此 API `没有明确的速率限制`，但请合理使用以避免服务器过载。
 
-## Disclaimer
+## 免责声明
 
-The information provided by this API may not always be accurate or up-to-date. Users should verify the information from other platforms before relying on it.
+本 API 提供的信息可能并非始终准确或最新。用户应在依赖这些信息之前从其他平台进行验证。
