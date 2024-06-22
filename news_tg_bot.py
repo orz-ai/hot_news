@@ -117,7 +117,7 @@ if __name__ == '__main__':
 
     app = ApplicationBuilder().token(token).build()
 
-    app.add_handler(CommandHandler('news', news))
+    app.add_handler(CommandHandler(['start', 'news'], news))
     app.add_handler(telegram.ext.CallbackQueryHandler(selected_news))
 
     # use polling mode

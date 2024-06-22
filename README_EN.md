@@ -67,3 +67,6 @@ There is currently `no explicit rate limiting` on this API, but please use it re
 ## Disclaimer
 
 The information provided by this API may not always be accurate or up-to-date. Users should verify the information from other platforms before relying on it.
+
+## Telegram Bot
+[Link](https://t.me/SpaceWatcherBot)
