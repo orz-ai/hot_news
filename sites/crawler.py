@@ -14,7 +14,7 @@ class Crawler:
         'accept-encoding': 'gzip, deflate, br',
     }
 
-    proxy = {
+    proxies = {
         "http": "http://127.0.0.1:7890",
         "https": "http://127.0.0.1:7890"
     }

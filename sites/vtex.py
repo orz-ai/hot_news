@@ -14,6 +14,15 @@ class VtexCrawler(Crawler):
 
     def fetch(self, date_str):
         url = "https://www.v2ex.com/?tab=hot"
+        self.header.update(
+            {
+                "accept-encoding": "",
+                "accept-language": "zh-CN,zh;q=0.9",
+                "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                "host": "www.v2ex.com",
+            }
+        )
+
         html = requests.get(url=url, headers=self.header, verify=False, timeout=self.timeout)
         html.encoding = "utf-8"
         html_text = html.text
@@ -31,7 +40,10 @@ class VtexCrawler(Crawler):
             link = base_link + href
 
             score_a = item.find('a', class_='count_livid')
-            score = score_a.text.strip()
+            if score_a is None:
+                score = 0
+            else:
+                score = score_a.text.strip()
 
             news = News(title=title, url=link, score=score, desc="", source=self.crawler_name(), create_time=now(),
                         update_time=now())
