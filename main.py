@@ -1,5 +1,7 @@
 import json
+import logging as log
 import time
+import traceback
 from datetime import datetime
 
 import pytz
@@ -17,6 +19,11 @@ _scheduler.start()
 
 factory = CrawlerRegister().register()
 
+log.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=log.INFO
+)
+
 
 @_scheduler.scheduled_job('interval', id='crawler_logic', seconds=1800)
 def crawlers_logic():
@@ -30,30 +37,32 @@ def crawlers_logic():
         try:
             news_list = crawler.fetch(date_str)
         except Exception as e:
-            print(e)
+            log.error("first time crawler %s error: %s" % (crawler_name, traceback.format_exc()))
             retry_crawler.append(crawler_name)
             continue
 
         if len(news_list) != 0:
             db.insert_news(news_list)
-            print(f"{crawler_name}爬取成功，共爬取{len(news_list)}条新闻")
+            log.info(f"{crawler_name}爬取成功，共爬取{len(news_list)}条新闻")
         else:
             retry_crawler.append(crawler_name)
+            log.info(f"{crawler_name}爬取失败，爬取到0条新闻")
 
-    print(f"\n剩余爬取{len(retry_crawler)}个网站")
+    log.info(f"\n剩余爬取{len(retry_crawler)}个网站，开始重试爬取")
     for crawler_name in retry_crawler:
         crawler = factory[crawler_name]
         try:
             news_list = crawler.fetch(date_str)
+            if len(news_list) != 0:
+                db.insert_news(news_list)
+                log.info(f"{crawler_name}爬取成功，共爬取{len(news_list)}条新闻")
+            else:
+                log.info(f"第二次重试{crawler_name}爬取失败，爬取到0条新闻")
         except Exception as e:
-            print(e)
+            log.error("second time crawler %s error: %s" % (crawler_name, traceback.format_exc()))
             continue
 
-        if len(news_list) != 0:
-            db.insert_news(news_list)
-            print(f"{crawler_name}爬取成功，共爬取{len(news_list)}条新闻")
-
-    print("爬取结束: ", time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+    log.info("爬取结束: " + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
 
 
 @app.get("/dailynews/")

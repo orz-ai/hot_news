@@ -14,7 +14,8 @@ class VtexCrawler(Crawler):
 
     def fetch(self, date_str):
         url = "https://www.v2ex.com/?tab=hot"
-        self.header.update(
+        header = self.header.copy()
+        header.update(
             {
                 "accept-encoding": "",
                 "accept-language": "zh-CN,zh;q=0.9",
@@ -23,7 +24,7 @@ class VtexCrawler(Crawler):
             }
         )
 
-        html = requests.get(url=url, headers=self.header, verify=False, timeout=self.timeout)
+        html = requests.get(url=url, headers=header, verify=False, timeout=self.timeout)
         html.encoding = "utf-8"
         html_text = html.text
         soup = BeautifulSoup(html_text, "html.parser")
