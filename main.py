@@ -48,7 +48,7 @@ def crawlers_logic():
             retry_crawler.append(crawler_name)
             log.info(f"{crawler_name}爬取失败，爬取到0条新闻")
 
-    log.info(f"\n剩余爬取{len(retry_crawler)}个网站，开始重试爬取")
+    log.info(f"剩余爬取{len(retry_crawler)}个网站，开始重试爬取")
     for crawler_name in retry_crawler:
         crawler = factory[crawler_name]
         try:
@@ -93,4 +93,5 @@ def get_hot_news(date: str = None, platform: str = None):
 
 
 if __name__ == "__main__":
+    crawlers_logic()
     uvicorn.run(app, host="0.0.0.0", port=18080)

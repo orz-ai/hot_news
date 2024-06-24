@@ -13,9 +13,9 @@ class TestCrawler:
         pass
 
     def test_crawler(self):
-        from sites.hupu import HuPuCrawler
+        from sites.bilibili import BilibiliCrawler
 
-        crawler = HuPuCrawler()
+        crawler = BilibiliCrawler()
         crawler.fetch(date_str)
 
 

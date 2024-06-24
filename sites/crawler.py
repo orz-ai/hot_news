@@ -19,7 +19,7 @@ class Crawler:
         "https": "http://127.0.0.1:7890"
     }
 
-    timeout = 2
+    timeout = 30
 
     def fetch(self, date_str):
         raise NotImplementedError("Subclasses must implement fetch method")

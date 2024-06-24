@@ -6,14 +6,25 @@ from sqlalchemy.sql.functions import now
 import cache
 from db import News
 from .crawler import Crawler
+import urllib3
+urllib3.disable_warnings()
 
 
 class BilibiliCrawler(Crawler):
 
     def fetch(self, date_str):
-        url = "http://api.bilibili.com/x/web-interface/ranking/v2"
+        url = "http://api.bilibili.com/x/web-interface/ranking/v2?rid=0&type=all"
         header = self.header.copy()
-        header["host"] = "api.bilibili.com"
+        header.update({
+            'accept': 'application/json, text/plain, */*',
+            'origin': 'https://www.bilibili.com',
+            'host': 'api.bilibili.com',
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Safari/605.1.15',
+            'accept-language': 'zh-cn',
+            'connection': 'keep-alive',
+            'referer': 'https://www.bilibili.com/v/popular/rank/all',
+            'accept-encoding': '',
+        })
 
         resp = requests.get(url=url, headers=header, verify=False, timeout=self.timeout)
         if resp.status_code != 200:
