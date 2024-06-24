@@ -1,12 +1,13 @@
 import json
 
 import requests
+import urllib3
 from sqlalchemy.sql.functions import now
 
 import cache
 from db import News
 from .crawler import Crawler
-import urllib3
+
 urllib3.disable_warnings()
 
 

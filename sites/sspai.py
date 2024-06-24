@@ -1,12 +1,13 @@
 import json
 
 import requests
+import urllib3
 from sqlalchemy.sql.functions import now
 
 import cache
 from db import News
 from .crawler import Crawler
-import urllib3
+
 urllib3.disable_warnings()
 
 
@@ -31,7 +32,8 @@ class ShaoShuPaiCrawler(Crawler):
             score = comments_count + likes_count
             desc = article.get("summary")
 
-            news = News(title=title, url=article_url, score=score, source=self.crawler_name(), desc=desc, create_time=now(), update_time=now())
+            news = News(title=title, url=article_url, score=score, source=self.crawler_name(), desc=desc,
+                        create_time=now(), update_time=now())
             result.append(news)
             cache_list.append(news.to_cache_json())
 

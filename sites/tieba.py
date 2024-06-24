@@ -1,13 +1,13 @@
 import json
 
 import requests
-from bs4 import BeautifulSoup
+import urllib3
 from sqlalchemy.sql.functions import now
 
 import cache
 from db import News
 from .crawler import Crawler
-import urllib3
+
 urllib3.disable_warnings()
 
 
@@ -31,7 +31,8 @@ class TieBaCrawler(Crawler):
             desc = discus.get("topic_desc")
             link = discus.get("topic_url")
 
-            news = News(title=title, url=link, score=score, desc=desc, source=self.crawler_name(), create_time=now(), update_time=now())
+            news = News(title=title, url=link, score=score, desc=desc, source=self.crawler_name(), create_time=now(),
+                        update_time=now())
             result.append(news)
             cache_list.append(news.to_cache_json())
 
@@ -40,4 +41,3 @@ class TieBaCrawler(Crawler):
 
     def crawler_name(self):
         return "tieba"
-

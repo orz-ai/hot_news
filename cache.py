@@ -1,6 +1,5 @@
 import redis
 from pydantic import BaseModel
-from datetime import datetime
 
 redis_client = redis.StrictRedis(host='localhost', port=6379, db=0, password="")
 

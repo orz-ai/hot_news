@@ -53,8 +53,6 @@ class DouYinCrawler(Crawler):
         cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
 
-
-
     def crawler_name(self):
         return "douyin"
 

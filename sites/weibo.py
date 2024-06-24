@@ -1,13 +1,13 @@
 import json
 
 import requests
-from bs4 import BeautifulSoup
+import urllib3
 from sqlalchemy.sql.functions import now
 
 import cache
 from db import News
 from .crawler import Crawler
-import urllib3
+
 urllib3.disable_warnings()
 
 
@@ -30,13 +30,13 @@ class WeiboCrawler(Crawler):
             hot_index = hot_search.get("num")
             hot_url = f"https://s.weibo.com/weibo?q={title}"
 
-            news = News(title=title, url=hot_url, score=hot_index, source=self.crawler_name(), create_time=now(), update_time=now())
+            news = News(title=title, url=hot_url, score=hot_index, source=self.crawler_name(), create_time=now(),
+                        update_time=now())
             result.append(news)
             cache_list.append(news.to_cache_json())
 
         cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
-
 
     def crawler_name(self):
         return "weibo"
