@@ -4,17 +4,17 @@ import requests
 import urllib3
 from sqlalchemy.sql.functions import now
 
-import cache
-from db import News
+from ...core import cache
+from ...db.mysql import News
 from .crawler import Crawler
 
 urllib3.disable_warnings()
 
 
-class JueJinCrawler(Crawler):
+class TieBaCrawler(Crawler):
 
     def fetch(self, date_str):
-        url = "https://api.juejin.cn/content_api/v1/content/article_rank?category_id=1&type=hot"
+        url = "https://tieba.baidu.com/hottopic/browse/topicList"
 
         resp = requests.get(url=url, params=self.header, verify=False, timeout=self.timeout)
         if resp.status_code != 200:
@@ -22,16 +22,16 @@ class JueJinCrawler(Crawler):
             return []
 
         json_data = resp.json()
-        contents = json_data.get("data")
+        hot_discuses = json_data.get("data")["bang_topic"]["topic_list"]
         result = []
         cache_list = []
-        for i, discus in enumerate(contents):
-            title = discus.get("content")["title"]
-            score = discus.get("content_counter")["view"]
-            content_id = discus.get("content")["content_id"]
-            link = f"https://juejin.cn/post/{content_id}"
+        for i, discus in enumerate(hot_discuses):
+            title = discus.get("topic_name")
+            score = discus.get("discuss_num")
+            desc = discus.get("topic_desc")
+            link = discus.get("topic_url")
 
-            news = News(title=title, url=link, score=score, desc="", source=self.crawler_name(), create_time=now(),
+            news = News(title=title, url=link, score=score, desc=desc, source=self.crawler_name(), create_time=now(),
                         update_time=now())
             result.append(news)
             cache_list.append(news.to_cache_json())
@@ -40,4 +40,4 @@ class JueJinCrawler(Crawler):
         return result
 
     def crawler_name(self):
-        return "juejin"
+        return "tieba"

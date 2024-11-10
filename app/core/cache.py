@@ -1,11 +1,15 @@
 import redis
 from pydantic import BaseModel
 
-redis_client = redis.StrictRedis(host='localhost', port=6379, db=0, password="")
+redis_client = redis.StrictRedis(host='127.0.0.1', port=6379, db=0, password="")
 
 
 def _get(key):
-    return redis_client.get(key).decode("utf-8")
+    value = redis_client.get(key)
+    if value is None:
+        return None
+
+    return value.decode("utf-8")
 
 
 def _set(key, value, ex=None):

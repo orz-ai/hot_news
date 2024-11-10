@@ -1,9 +1,7 @@
-from sqlalchemy import create_engine, Column, String, Integer, DateTime
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, String, Integer, DateTime
 
-engine = create_engine('mysql+pymysql://root:123456@localhost/news_crawler?charset=utf8mb4')
-Base = declarative_base()
+from app.core import db
+from app.core.db import Base
 
 
 class News(Base):
@@ -27,11 +25,5 @@ class News(Base):
         }
 
 
-Session = sessionmaker(bind=engine)
-session = Session()
-
-
 def insert_news(news_list):
-    session.add_all(news_list)
-    session.commit()
-    session.close()
+    db.insert_news(news_list)

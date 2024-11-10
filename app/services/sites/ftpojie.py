@@ -6,8 +6,8 @@ import urllib3
 from bs4 import BeautifulSoup
 from sqlalchemy.sql.functions import now
 
-import cache
-from db import News
+from ...core import cache
+from ...db.mysql import News
 from .crawler import Crawler
 
 urllib3.disable_warnings()

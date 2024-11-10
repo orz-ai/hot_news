@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 
@@ -105,7 +106,6 @@ def build_reply_makeup():
 
 
 if __name__ == '__main__':
-    # bot token
     token = os.getenv('TG_BOT_TOKEN')
     if not token:
         logging.error("Please set the environment variable 'TG_BOT_TOKEN'")
@@ -119,6 +119,9 @@ if __name__ == '__main__':
 
     app.add_handler(CommandHandler(['start', 'news'], news))
     app.add_handler(telegram.ext.CallbackQueryHandler(selected_news))
+
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
 
     # use polling mode
     app.run_polling()

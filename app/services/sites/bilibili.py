@@ -4,9 +4,9 @@ import requests
 import urllib3
 from sqlalchemy.sql.functions import now
 
-import cache
-from db import News
 from .crawler import Crawler
+from ...core import cache
+from ...db.mysql import News
 
 urllib3.disable_warnings()
 

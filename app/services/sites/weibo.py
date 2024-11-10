@@ -4,17 +4,17 @@ import requests
 import urllib3
 from sqlalchemy.sql.functions import now
 
-import cache
-from db import News
+from ...core import cache
+from ...db.mysql import News
 from .crawler import Crawler
 
 urllib3.disable_warnings()
 
 
-class TieBaCrawler(Crawler):
+class WeiboCrawler(Crawler):
 
     def fetch(self, date_str):
-        url = "https://tieba.baidu.com/hottopic/browse/topicList"
+        url = "https://weibo.com/ajax/side/hotSearch"
 
         resp = requests.get(url=url, params=self.header, verify=False, timeout=self.timeout)
         if resp.status_code != 200:
@@ -22,16 +22,15 @@ class TieBaCrawler(Crawler):
             return []
 
         json_data = resp.json()
-        hot_discuses = json_data.get("data")["bang_topic"]["topic_list"]
+        hot_searches = json_data.get("data")["realtime"]
         result = []
         cache_list = []
-        for i, discus in enumerate(hot_discuses):
-            title = discus.get("topic_name")
-            score = discus.get("discuss_num")
-            desc = discus.get("topic_desc")
-            link = discus.get("topic_url")
+        for hot_search in hot_searches:
+            title = hot_search.get("word")
+            hot_index = hot_search.get("num")
+            hot_url = f"https://s.weibo.com/weibo?q={title}"
 
-            news = News(title=title, url=link, score=score, desc=desc, source=self.crawler_name(), create_time=now(),
+            news = News(title=title, url=hot_url, score=hot_index, source=self.crawler_name(), create_time=now(),
                         update_time=now())
             result.append(news)
             cache_list.append(news.to_cache_json())
@@ -40,4 +39,4 @@ class TieBaCrawler(Crawler):
         return result
 
     def crawler_name(self):
-        return "tieba"
+        return "weibo"

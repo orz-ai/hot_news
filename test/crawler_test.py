@@ -13,7 +13,7 @@ class TestCrawler:
         pass
 
     def test_crawler(self):
-        from sites.bilibili import BilibiliCrawler
+        from app.service.sites import BilibiliCrawler
 
         crawler = BilibiliCrawler()
         crawler.fetch(date_str)
