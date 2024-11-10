@@ -13,20 +13,20 @@ The Daily Hot News API provides access to real-time hot news data from various p
 - **Method**: `GET`
 - **Parameters**:
   - `platform`: Specify the platform. Supported platforms are:
-	  - baidu
-	  - shaoshupai
-	  - weibo
-	  - zhihu
-	  - 36kr
-	  - 52pojie
-	  - bilibili
-	  - douban
-	  - hupu
-	  - tieba
-	  - juejin
-	  - douyin
-	  - v2ex
-      - jinritoutiao
+	  - [x] baidu
+	  - [x] shaoshupai
+	  - [x] weibo
+	  - [x] zhihu
+	  - [x] 36kr
+	  - [x] 52pojie
+	  - [x] bilibili
+	  - [x] douban
+	  - [x] hupu
+	  - [x] tieba
+	  - [x] juejin
+	  - [x] douyin
+	  - [x] v2ex
+      - [x] jinritoutiao
 
 - **Example Request**:
   ```shell
