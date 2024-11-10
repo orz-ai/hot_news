@@ -13,7 +13,7 @@
 - **方法**: `GET`
 - **参数**:
   - `platform`: 指定平台。支持的平台有：
-    - baidu
+    [x] baidu
     - shaoshupai
     - weibo
     - zhihu
