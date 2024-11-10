@@ -20,7 +20,7 @@ class DouYinCrawler(Crawler):
 
         token_resp = requests.get(url=token_url, params=self.header, verify=False)
         if token_resp.status_code != 200:
-            print(f"请求失败，状态码：{token_resp.status_code}")
+            print(f"request failed, status: {token_resp.status_code}")
             return []
 
         cookie = token_resp.headers["set-cookie"]

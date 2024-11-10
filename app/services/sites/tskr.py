@@ -25,14 +25,11 @@ class TsKrCrawler(Crawler):
             "content-type": "application/json;charset=UTF-8",
         })
 
-        # 当前时间戳
         now_timestamp = int(time.time() * 1000)
-
         data = {"partner_id": "wap", "timestamp": now_timestamp, "param": {"siteId": 1, "platformId": 2}}
-
         resp = requests.post(url=url, headers=header, json=data, verify=False, timeout=self.timeout)
         if resp.status_code != 200:
-            print(f"请求失败，状态码：{resp.status_code}")
+            print(f"request failed, status: {resp.status_code}")
             return []
 
         json_data = resp.json()

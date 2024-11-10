@@ -4,9 +4,9 @@ import requests
 import urllib3
 from sqlalchemy.sql.functions import now
 
+from .crawler import Crawler
 from ...core import cache
 from ...db.mysql import News
-from .crawler import Crawler
 
 urllib3.disable_warnings()
 
@@ -18,7 +18,7 @@ class ZhiHuCrawler(Crawler):
 
         resp = requests.get(url=url, params=self.header, verify=False, timeout=self.timeout)
         if resp.status_code != 200:
-            print(f"请求失败，状态码：{resp.status_code}")
+            print(f"request failed, status: {resp.status_code}")
             return []
 
         json_data = resp.json()

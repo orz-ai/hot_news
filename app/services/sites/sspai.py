@@ -16,7 +16,7 @@ class ShaoShuPaiCrawler(Crawler):
         url = "https://sspai.com/api/v1/article/tag/page/get?limit=50&offset=0&tag=%E7%83%AD%E9%97%A8%E6%96%87%E7%AB%A0&released=false"
         resp = requests.get(url=url, params=self.header, verify=False, timeout=self.timeout)
         if resp.status_code != 200:
-            print(f"请求失败，状态码：{resp.status_code}")
+            print(f"request failed, status: {resp.status_code}")
             return []
 
         json_data = resp.json()

@@ -38,7 +38,6 @@ def get_meta(url: str = None):
     }
 
     try:
-        # 请求网页内容
         response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()
     except requests.RequestException as e:
@@ -48,10 +47,7 @@ def get_meta(url: str = None):
             "msg": f"Failed to fetch page content: {e}"
         }
 
-    # 解析网页内容
     soup = BeautifulSoup(response.content, "html.parser")
-
-    # 提取 meta 信息
     meta_info = {
         "title": soup.title.string if soup.title else "No title",
         "description": "",
@@ -67,13 +63,11 @@ def get_meta(url: str = None):
         "twitter:image": ""
     }
 
-    # 查找常见的 meta 信息
     for meta_tag in soup.find_all("meta"):
         name_attr = meta_tag.get("name", "").lower()
         property_attr = meta_tag.get("property", "").lower()
         content = meta_tag.get("content", "")
 
-        # 匹配标准 meta 信息
         if name_attr == "description":
             meta_info["description"] = content
         elif name_attr == "keywords":
@@ -81,7 +75,6 @@ def get_meta(url: str = None):
         elif name_attr == "author":
             meta_info["author"] = content
 
-        # 匹配 Open Graph 协议 (og:) 信息
         elif property_attr == "og:title":
             meta_info["og:title"] = content
         elif property_attr == "og:description":
@@ -91,7 +84,6 @@ def get_meta(url: str = None):
         elif property_attr == "og:url":
             meta_info["og:url"] = content
 
-        # 匹配 Twitter 卡片信息
         elif name_attr == "twitter:card":
             meta_info["twitter:card"] = content
         elif name_attr == "twitter:title":
@@ -101,12 +93,10 @@ def get_meta(url: str = None):
         elif name_attr == "twitter:image":
             meta_info["twitter:image"] = content
 
-    # 提取 favicon 图标链接
     parsed_url = urlparse(url)
     base_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
     favicon_url = urljoin(base_url, "favicon.ico")  # 默认 favicon 路径
 
-    # 尝试从 link 标签中查找 favicon
     link_tag = soup.find("link", rel=["icon", "shortcut icon"])
     if link_tag:
         favicon_url = urljoin(base_url, link_tag.get("href", "favicon.ico"))

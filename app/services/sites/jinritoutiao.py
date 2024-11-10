@@ -28,7 +28,7 @@ class JinRiTouTiaoCrawler(Crawler):
 
         resp = requests.get(url=url, headers=header, verify=False, timeout=self.timeout)
         if resp.status_code != 200:
-            print(f"请求失败，状态码：{resp.status_code}")
+            print(f"request failed, status: {resp.status_code}")
             return []
 
         json_data = resp.json()

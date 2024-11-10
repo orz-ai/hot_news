@@ -4,7 +4,6 @@ from datetime import datetime
 
 import pytz
 
-from app.core import db
 from app.services import factory, _scheduler
 from app.utils.logger import log
 
@@ -27,23 +26,23 @@ def crawlers_logic():
 
         if len(news_list) != 0:
             # db.insert_news(news_list)
-            log.info(f"{crawler_name}爬取成功，共爬取{len(news_list)}条新闻")
+            log.info(f"{crawler_name} fetch success, {len(news_list)} news fetched")
         else:
             retry_crawler.append(crawler_name)
-            log.info(f"{crawler_name}爬取失败，爬取到0条新闻")
+            log.info(f"{crawler_name} fetch failed， 0 news fetched")
 
-    log.info(f"剩余爬取{len(retry_crawler)}个网站，开始重试爬取")
+    log.info(f"left {len(retry_crawler)} sites， start second time crawler")
     for crawler_name in retry_crawler:
         crawler = factory[crawler_name]
         try:
             news_list = crawler.fetch(date_str)
             if len(news_list) != 0:
                 # db.insert_news(news_list)
-                log.info(f"{crawler_name}爬取成功，共爬取{len(news_list)}条新闻")
+                log.info(f"{crawler_name} fetch success，{len(news_list)} news fetched")
             else:
-                log.info(f"第二次重试{crawler_name}爬取失败，爬取到0条新闻")
+                log.info(f"sencond time crawler {crawler_name} failed. 0 news fetched")
         except Exception as e:
             log.error("second time crawler %s error: %s" % (crawler_name, traceback.format_exc()))
             continue
 
-    log.info("爬取结束: " + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+    log.info("crawler finished: " + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))

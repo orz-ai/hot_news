@@ -43,7 +43,6 @@ class DouBanCrawler(Crawler):
         for channel_item in channel_items:
             likes = channel_item.find('div', class_='likes')
             score = likes.text.strip()
-            # 正则表达式提取数字
             score = re.sub("\D", "", score)
 
             title_a = channel_item.find('h3').find('a')
