@@ -1,13 +1,15 @@
 # -- coding: utf-8 --
 
 import json
+import datetime  # 添加datetime导入
 
 import requests
 import urllib3
-from sqlalchemy.sql.functions import now
+from bs4 import BeautifulSoup
+# 移除 SQLAlchemy 导入
+# from sqlalchemy.sql.functions import now
 
 from ...core import cache
-from ...db.mysql import News
 from .crawler import Crawler
 
 urllib3.disable_warnings()
@@ -19,40 +21,45 @@ class JinRiTouTiaoCrawler(Crawler):
     """
 
     def fetch(self, date_str):
+        # 获取当前时间
+        current_time = datetime.datetime.now()
+        
         url = "https://www.toutiao.com/hot-event/hot-board/?origin=toutiao_pc"
-        header = self.header.copy()
-        header.update({
-            "host": "www.toutiao.com",
-            "accept-encoding": "",
-        })
-
-        resp = requests.get(url=url, headers=header, verify=False, timeout=self.timeout)
+        
+        resp = requests.get(url=url, headers=self.header, verify=False, timeout=self.timeout)
         if resp.status_code != 200:
             print(f"request failed, status: {resp.status_code}")
             return []
-
-        json_data = resp.json()
-        hot_ranks = json_data.get("data")
-
-        result = []
-        cache_list = []
-        fix_top_news = json_data.get("fixed_top_data")
-        if fix_top_news:
-            hot_ranks.extend(fix_top_news)
-
-        for hot in hot_ranks:
-            title = hot.get("Title", "").strip()
-            desc = hot.get("QueryWord", "").strip().replace("\n", "")
-            score = hot.get("HotValue", "0")
-            link = hot.get("Url", "")
-
-            news = News(title=title, url=link, score=score, desc=desc, source=self.crawler_name(), create_time=now(),
-                        update_time=now())
-            result.append(news)
-            cache_list.append(news.to_cache_json())
-
-        cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
-        return result
+            
+        try:
+            json_data = resp.json()
+            data = json_data.get('data', [])
+            
+            result = []
+            cache_list = []
+            
+            for item in data:
+                title = item.get('Title', '')
+                url = item.get('Url', '')
+                hot_value = item.get('HotValue', '')
+                
+                news = {
+                    'title': title,
+                    'url': url,
+                    'content': f"热度: {hot_value}",
+                    'source': 'jinritoutiao',
+                    'publish_time': current_time.strftime('%Y-%m-%d %H:%M:%S')
+                }
+                
+                result.append(news)
+                cache_list.append(news)
+                
+            cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+            return result
+            
+        except Exception as e:
+            print(f"Error parsing JSON: {e}")
+            return []
 
     def crawler_name(self):
         return "jinritoutiao"

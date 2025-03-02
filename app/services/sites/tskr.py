@@ -1,55 +1,70 @@
 import json
-import time
+import datetime  # 添加datetime导入
 
 import requests
 import urllib3
-from sqlalchemy.sql.functions import now
+from bs4 import BeautifulSoup
+# 移除 SQLAlchemy 导入
+# from sqlalchemy.sql.functions import now
 
+from .crawler import Crawler
 from ...core import cache
 from ...db.mysql import News
-from .crawler import Crawler
 
 urllib3.disable_warnings()
 
-
 class TsKrCrawler(Crawler):
     def fetch(self, date_str):
-        url = "https://gateway.36kr.com/api/mis/nav/home/nav/rank/hot"
-
-        header = self.header.copy()
-        header.update({
-            "host": "gateway.36kr.com",
-            "origin": "https://m.36kr.com",
-            "Referer": "https://m.36kr.com/",
-            "User-agent": "Mozilla/5.0 (Linux; Android 10; Redmi K30 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36",
-            "content-type": "application/json;charset=UTF-8",
-        })
-
-        now_timestamp = int(time.time() * 1000)
-        data = {"partner_id": "wap", "timestamp": now_timestamp, "param": {"siteId": 1, "platformId": 2}}
-        resp = requests.post(url=url, headers=header, json=data, verify=False, timeout=self.timeout)
+        # 获取当前时间
+        current_time = datetime.datetime.now()
+        
+        url = "https://36kr.com/hot-list/catalog"
+        
+        resp = requests.get(url=url, headers=self.header, verify=False, timeout=self.timeout)
         if resp.status_code != 200:
             print(f"request failed, status: {resp.status_code}")
             return []
-
-        json_data = resp.json()
-        hot_searches = json_data.get("data")["hotRankList"]
+            
+        html_text = resp.text
+        soup = BeautifulSoup(html_text, "html.parser")
+        
+        # 找到热门文章列表
+        article_list = soup.find_all('div', class_='hotlist-item-toptwo')
+        if not article_list:
+            article_list = soup.find_all('div', class_='hotlist-item-other')
+        
         result = []
         cache_list = []
-        for hot_search in hot_searches:
-            material = hot_search.get("templateMaterial")
-            mid = material.get("itemId")
-            title = material.get("widgetTitle")
-            score = material.get("statRead")
-            hot_url = f"https://www.36kr.com/p/{mid}"
-
-            news = News(title=title, url=hot_url, score=score, source=self.crawler_name(), create_time=now(),
-                        update_time=now())
+        
+        for article in article_list:
+            title_elem = article.find('p', class_='title')
+            if not title_elem:
+                continue
+                
+            link_elem = article.find('a')
+            if not link_elem:
+                continue
+                
+            title = title_elem.text.strip()
+            url = "https://36kr.com" + link_elem.get('href') if link_elem.get('href').startswith('/') else link_elem.get('href')
+            
+            # 获取文章摘要
+            desc_elem = article.find('div', class_='summary')
+            desc = desc_elem.text.strip() if desc_elem else ""
+            
+            news = {
+                'title': title,
+                'url': url,
+                'content': desc,
+                'source': '36kr',
+                'publish_time': current_time.strftime('%Y-%m-%d %H:%M:%S')
+            }
+            
             result.append(news)
-            cache_list.append(news.to_cache_json())
-
+            cache_list.append(news)
+            
         cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
-
+        
     def crawler_name(self):
         return "36kr"

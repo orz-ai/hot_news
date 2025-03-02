@@ -1,0 +1,58 @@
+
+app:
+  title: "News Crawler API"
+  description: "API for news crawling and management"
+  version: "1.0.0"
+  host: "0.0.0.0"
+  port: 18080
+  debug: true
+  cors:
+    allow_origins: ["*"]
+    allow_credentials: true
+    allow_methods: ["*"]
+    allow_headers: ["*"]
+
+database:
+  host: "localhost"
+  user: "root"
+  password: "123456"
+  db: "news_crawler"
+  charset: "utf8mb4"
+  autocommit: true
+
+
+redis:
+  host: "localhost"
+  port: 6379
+  db: 0
+  password: ""
+  decode_responses: false
+  socket_timeout: 5
+  socket_connect_timeout: 5
+  health_check_interval: 30
+
+crawler:
+  interval: 1800
+  timeout: 1700
+  max_retry_count: 2
+  max_instances: 2
+  misfire_grace_time: 300
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  dir: "logs"
+  file: "app.log"
+  max_size: 10485760  # 10MB
+  backup_count: 5
+  daily_backup_count: 30
+  timezone: "Asia/Shanghai"
+
+
+scheduler:
+  thread_pool_size: 20
+  process_pool_size: 5
+  coalesce: true
+  max_instances: 2
+  misfire_grace_time: 300
+  timezone: "Asia/Shanghai" 

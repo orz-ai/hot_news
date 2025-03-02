@@ -1,10 +1,12 @@
 import json
 import re
+import datetime  # 添加datetime导入
 
 import requests
 import urllib3
 from bs4 import BeautifulSoup
-from sqlalchemy.sql.functions import now
+# 移除 SQLAlchemy 导入
+# from sqlalchemy.sql.functions import now
 
 from ...core import cache
 from ...db.mysql import News
@@ -16,6 +18,9 @@ urllib3.disable_warnings()
 class DouBanCrawler(Crawler):
 
     def fetch(self, date_str):
+        # 获取当前时间
+        current_time = datetime.datetime.now()
+        
         url = "https://www.douban.com/group/explore"
 
         header = self.header.copy()
@@ -32,28 +37,47 @@ class DouBanCrawler(Crawler):
             "upgrade-insecure-requests": "1",
         })
 
-        html = requests.get(url=url, headers=header, verify=False, timeout=self.timeout)
-        html.encoding = "utf-8"
-        html_text = html.text
+        resp = requests.get(url=url, headers=header, verify=False, timeout=self.timeout)
+        if resp.status_code != 200:
+            print(f"request failed, status: {resp.status_code}")
+            return []
+            
+        html_text = resp.text
         soup = BeautifulSoup(html_text, "html.parser")
-        channel_items = soup.find_all('div', class_='channel-item')
-
+        
+        # 找到热门话题列表
+        topic_list = soup.find_all('div', class_='channel-item')
+        
         result = []
         cache_list = []
-        for channel_item in channel_items:
-            likes = channel_item.find('div', class_='likes')
-            score = likes.text.strip()
-            score = re.sub("\D", "", score)
-
-            title_a = channel_item.find('h3').find('a')
-            title = title_a.text.strip()
-            link = title_a['href']
-
-            news = News(title=title, url=link, score=score, source=self.crawler_name(), create_time=now(),
-                        update_time=now())
+        
+        for topic in topic_list:
+            title_elem = topic.find('h3')
+            if not title_elem:
+                continue
+                
+            link_elem = title_elem.find('a')
+            if not link_elem:
+                continue
+                
+            title = link_elem.text.strip()
+            url = link_elem.get('href')
+            
+            # 获取话题描述
+            desc_elem = topic.find('div', class_='content')
+            desc = desc_elem.text.strip() if desc_elem else ""
+            
+            news = {
+                'title': title,
+                'url': url,
+                'content': desc,
+                'source': 'douban',
+                'publish_time': current_time.strftime('%Y-%m-%d %H:%M:%S')
+            }
+            
             result.append(news)
-            cache_list.append(news.to_cache_json())
-
+            cache_list.append(news)
+            
         cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
 

@@ -1,3 +1,5 @@
+from typing import Dict, Type
+
 from .baidu import BaiduNewsCrawler
 from .bilibili import BilibiliCrawler
 from .crawler import Crawler
@@ -16,9 +18,14 @@ from .zhihu import ZhiHuCrawler
 
 
 class CrawlerRegister:
-
-    @staticmethod
-    def register() -> dict[str, Crawler]:
+    """爬虫注册器"""
+    
+    def __init__(self):
+        self.crawlers = {}
+    
+    def register(self) -> Dict[str, Crawler]:
+        """注册所有爬虫"""
+        # 注册所有爬虫
         crawler_map = {
             "baidu": BaiduNewsCrawler(),
             "shaoshupai": ShaoShuPaiCrawler(),
@@ -35,8 +42,9 @@ class CrawlerRegister:
             "v2ex": VtexCrawler(),
             "jinritoutiao": JinRiTouTiaoCrawler(),
         }
-
-        return crawler_map
+        
+        self.crawlers = crawler_map
+        return self.crawlers
 
     def get_crawlers(self):
         return self.register().values()

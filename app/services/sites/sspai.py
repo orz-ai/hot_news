@@ -1,11 +1,13 @@
 import json
+import datetime  # 添加datetime导入
 
 import requests
 import urllib3
-from sqlalchemy.sql.functions import now
+from bs4 import BeautifulSoup
+# 移除 SQLAlchemy 导入
+# from sqlalchemy.sql.functions import now
 
 from ...core import cache
-from ...db.mysql import News
 from .crawler import Crawler
 
 urllib3.disable_warnings()
@@ -13,32 +15,46 @@ urllib3.disable_warnings()
 
 class ShaoShuPaiCrawler(Crawler):
     def fetch(self, date_str):
-        url = "https://sspai.com/api/v1/article/tag/page/get?limit=50&offset=0&tag=%E7%83%AD%E9%97%A8%E6%96%87%E7%AB%A0&released=false"
-        resp = requests.get(url=url, params=self.header, verify=False, timeout=self.timeout)
+        # 获取当前时间
+        current_time = datetime.datetime.now()
+        
+        url = "https://sspai.com/api/v1/article/index/page/get?limit=20&offset=0&created_at=0"
+        
+        resp = requests.get(url=url, headers=self.header, verify=False, timeout=self.timeout)
         if resp.status_code != 200:
             print(f"request failed, status: {resp.status_code}")
             return []
-
-        json_data = resp.json()
-        article_list = json_data.get("data")
-        result = []
-        cache_list = []
-        for article in article_list:
-            title = article.get("title")
-            article_id = article.get("id")
-            article_url = f"https://sspai.com/post/{article_id}"
-            comments_count = article.get("comment_count")
-            likes_count = article.get("like_count")
-            score = comments_count + likes_count
-            desc = article.get("summary")
-
-            news = News(title=title, url=article_url, score=score, source=self.crawler_name(), desc=desc,
-                        create_time=now(), update_time=now())
-            result.append(news)
-            cache_list.append(news.to_cache_json())
-
-        cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
-        return result
-
+            
+        try:
+            json_data = resp.json()
+            data = json_data.get('data', [])
+            
+            result = []
+            cache_list = []
+            
+            for item in data:
+                title = item.get('title', '')
+                article_id = item.get('id', '')
+                url = f"https://sspai.com/post/{article_id}"
+                summary = item.get('summary', '')
+                
+                news = {
+                    'title': title,
+                    'url': url,
+                    'content': summary,
+                    'source': 'sspai',
+                    'publish_time': current_time.strftime('%Y-%m-%d %H:%M:%S')
+                }
+                
+                result.append(news)
+                cache_list.append(news)
+                
+            cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+            return result
+            
+        except Exception as e:
+            print(f"Error parsing JSON: {e}")
+            return []
+        
     def crawler_name(self):
         return "shaoshupai"

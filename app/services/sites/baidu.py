@@ -1,9 +1,9 @@
 import json
+import datetime
 
 import requests
 import urllib3
 from bs4 import BeautifulSoup
-from sqlalchemy.sql.functions import now
 
 from .crawler import Crawler
 from ...core import cache
@@ -14,8 +14,10 @@ urllib3.disable_warnings()
 
 class BaiduNewsCrawler(Crawler):
     # 返回news_list
-    def fetch(self, date_str) -> list[News]:
-
+    def fetch(self, date_str) -> list:
+        # 获取当前时间
+        current_time = datetime.datetime.now()
+        
         url = "https://top.baidu.com/api/board?platform=wise&tab=realtime"
 
         resp = requests.get(url=url, params=self.header, verify=False, timeout=self.timeout)
@@ -35,10 +37,15 @@ class BaiduNewsCrawler(Crawler):
 
             # replace url m to www
             url = url.replace("m.", "www.")
-            news = News(title=title, url=url, score=score, desc=desc, source=self.crawler_name(), create_time=now(),
-                        update_time=now())
+            news = {
+                'title': title,
+                'url': url,
+                'content': desc,
+                'source': 'baidu',
+                'publish_time': current_time.strftime('%Y-%m-%d %H:%M:%S')  # 使用格式化的时间字符串
+            }
             result.append(news)
-            cache_list.append(news.to_cache_json())
+            cache_list.append(news)  # 直接添加字典，json.dumps会在后面处理整个列表
 
         cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
@@ -48,7 +55,9 @@ class BaiduNewsCrawler(Crawler):
 
     @staticmethod
     def fetch_v0():
-
+        # 获取当前时间
+        current_time = datetime.datetime.now()
+        
         url = "https://top.baidu.com/board?tab=realtime"
         proxies = {
             # "http": "http://127.0.0.1:7890",
@@ -78,8 +87,13 @@ class BaiduNewsCrawler(Crawler):
             news_title = div_element.find(class_='c-single-text-ellipsis').text.strip()
             news_link = div_element.find('a', class_='title_dIF3B')['href']
 
-            news = News(title=news_title, url=news_link, score=hot_index, desc="", source="baidu", create_time=now(),
-                        update_time=now())
+            news = {
+                'title': news_title,
+                'url': news_link,
+                'content': "",
+                'source': 'baidu',
+                'publish_time': current_time.strftime('%Y-%m-%d %H:%M:%S')  # 使用格式化的时间字符串
+            }
             result.append(news)
 
         return result
