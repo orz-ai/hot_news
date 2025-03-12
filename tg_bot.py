@@ -56,7 +56,7 @@ async def selected_news(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
 
-    news_url = f"https://orz.ai/dailynews/?platform={supported_sites[query.data]}"
+    news_url = f"https://orz.ai/api/v1/dailynews/?platform={supported_sites[query.data]}"
 
     resp = requests.get(news_url)
 
