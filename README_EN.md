@@ -6,7 +6,7 @@
 
 The Daily Hot News API provides access to real-time hot news data from various platforms. The data is refreshed automatically about every half an hour. This API can be used to retrieve hot news headlines along with their URLs and scores.
 
-- **Base URL**: `https://orz.ai/dailynews/`
+- **Base URL**: `https://orz.ai/api/v1/dailynews`
 
 ## Usage
 
@@ -30,7 +30,7 @@ The Daily Hot News API provides access to real-time hot news data from various p
 
 - **Example Request**:
   ```shell
-  GET https://orz.ai/dailynews/?platform=baidu
+  GET https://orz.ai/api/v1/dailynews/?platform=baidu
   ```
 
 - **Example Response**:
