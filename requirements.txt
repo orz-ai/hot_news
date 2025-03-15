@@ -12,3 +12,6 @@ python-telegram-bot==21.3
 urllib3~=2.0.7
 pydantic~=2.6.2
 PyYAML~=6.0.2
+cloudscraper~=1.2.71
+selenium~=4.29.0
+webdriver-manager~=4.0.2

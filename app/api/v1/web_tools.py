@@ -1,6 +1,10 @@
 # app/api/endpoints/website_meta.py
 import json
+import time
 from urllib.parse import urlparse, urljoin
+
+import cloudscraper
+
 from app.utils.logger import log
 
 import requests
@@ -27,27 +31,44 @@ def get_meta(url: str = None):
         return {
             "status": "200",
             "data": json.loads(cached_metadata),
-            "msg": "success"
+            "msg": "success",
+            "cache": True
         }
 
     headers = {
-        "User-Agent": (
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-            "(KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        )
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "accept-language": "zh-CN,zh;q=0.9,zh-TW;q=0.8,ar;q=0.7,en;q=0.6",
+        "cache-control": "max-age=0",
+        "priority": "u=0, i",
+        "sec-ch-ua": '"Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Windows"',
+        "sec-fetch-dest": "document",
+        "sec-fetch-mode": "navigate",
+        "sec-fetch-site": "same-origin",
+        "sec-fetch-user": "?1",
+        "upgrade-insecure-requests": "1",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36"
     }
+
 
     try:
         response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()
+        page_content = response.content
     except requests.RequestException as e:
+        scraper = cloudscraper.create_scraper(delay=100)
+        response = scraper.get(url)
+        page_content = response.content
+
+    if not page_content:
         return {
-            "status": "500",
+            "status": "404",
             "data": [],
-            "msg": f"Failed to fetch page content: {e}"
+            "msg": "No content"
         }
 
-    soup = BeautifulSoup(response.content, "html.parser")
+    soup = BeautifulSoup(page_content, "html.parser")
     meta_info = {
         "title": soup.title.string if soup.title else "No title",
         "description": "",
@@ -110,7 +131,8 @@ def get_meta(url: str = None):
     result = {
         "status": "200",
         "data": metadata,
-        "msg": "Success"
+        "msg": "Success",
+        "cache": False
     }
 
     return result
