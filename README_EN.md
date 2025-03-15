@@ -74,3 +74,32 @@ The information provided by this API may not always be accurate or up-to-date. U
 You can use the bot directly or add it to your group.
 
 If you want to deploy the bot by yourself, you should set the `TG_BOT_TOKEN` in the environment variables and then run the following command: `python3 news_tg_bot.py`
+
+## Fetch Basic Information API
+
+Method：`GET`
+```shell
+GET https://orz.ai/api/v1/tools/website-meta/?url=https://v2ex.com/
+
+{
+  "status": "200",
+  "data": {
+    "meta_info": {
+      "title": "V2EX",
+      "description": "创意工作者的社区。讨论编程、设计、硬件、游戏等令人激动的话题。",
+      "keywords": "",
+      "author": "",
+      "og:title": "",
+      "og:description": "",
+      "og:image": "/static/icon-192.png",
+      "og:url": "https://v2ex.com/",
+      "twitter:card": "",
+      "twitter:title": "",
+      "twitter:description": "",
+      "twitter:image": "/static/icon-192.png"
+    },
+    "favicon_url": "https://v2ex.com/static/icon-192.png"
+  },
+  "msg": "Success"
+}
+```
