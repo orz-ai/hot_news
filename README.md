@@ -73,3 +73,35 @@
 [链接](https://t.me/SpaceWatcherBot)
 
 你可以直接使用机器人或添加到你的群组中。如果你想自己部署，你需要在环境变量中设置好 `TG_BOT_TOKEN`，再执行下面的命令：`python3 news_tg_bot.py`
+
+## 网站基础信息接口
+
+[https://orz.ai/api/v1/tools/website-meta/?url=https://v2ex.com/](https://orz.ai/api/v1/tools/website-meta/?url=https://v2ex.com/)
+
+使用方法：`GET`
+```shell
+GET https://orz.ai/api/v1/tools/website-meta/?url=https://v2ex.com/
+
+{
+  "status": "200",
+  "data": {
+    "meta_info": {
+      "title": "V2EX",
+      "description": "创意工作者的社区。讨论编程、设计、硬件、游戏等令人激动的话题。",
+      "keywords": "",
+      "author": "",
+      "og:title": "",
+      "og:description": "",
+      "og:image": "/static/icon-192.png",
+      "og:url": "https://v2ex.com/",
+      "twitter:card": "",
+      "twitter:title": "",
+      "twitter:description": "",
+      "twitter:image": "/static/icon-192.png"
+    },
+    "favicon_url": "https://v2ex.com/static/icon-192.png"
+  },
+  "msg": "Success"
+}
+
+```
