@@ -7,7 +7,7 @@ import pytz
 import signal
 from typing import List, Dict, Any, Optional, Callable
 
-from app.services import factory, _scheduler
+from app.services import crawler_factory, _scheduler
 from app.utils.logger import log
 from app.core import db, cache
 from app.core.config import get_crawler_config
@@ -64,12 +64,8 @@ def safe_fetch(crawler_name: str, crawler, date_str: str, is_retry: bool = False
     try:
         news_list = crawler.fetch(date_str)
         if news_list and len(news_list) > 0:
-            # 缓存成功的结果
             cache_key = f"crawler:{crawler_name}:{date_str}"
-            cache.set_cache(cache_key, news_list, expire=86400)  # 缓存一天
-            
-            # 保存到数据库
-            db.insert_news(news_list)
+            cache.set_cache(key=cache_key, value=news_list, expire=0)
             
             log.info(f"{crawler_name} fetch success, {len(news_list)} news fetched")
             return news_list
@@ -88,30 +84,14 @@ def crawlers_logic():
     
     @timeout_handler
     def crawler_work():
-        # 获取当前上海时间
         now_time = datetime.now(SHANGHAI_TZ)
         date_str = now_time.strftime("%Y-%m-%d")
         log.info(f"Starting crawler job at {now_time.strftime('%Y-%m-%d %H:%M:%S')}")
         
-        # 检查是否已经运行过今天的爬虫
-        cache_key = f"crawler:run_date:{date_str}"
-        if cache.get_cache(cache_key):
-            log.info(f"Crawler already ran today ({date_str}), checking for missing data only")
-        
-        # 第一轮爬取
         retry_crawler = []
         success_count = 0
         
-        for crawler_name, crawler in factory.items():
-            # 检查缓存，避免重复爬取
-            cache_key = f"crawler:{crawler_name}:{date_str}"
-            cached_result = cache.get_cache(cache_key)
-            
-            if cached_result:
-                log.info(f"Using cached result for {crawler_name}")
-                success_count += 1
-                continue
-                
+        for crawler_name, crawler in crawler_factory.items():
             news_list = safe_fetch(crawler_name, crawler, date_str)
             if news_list:
                 success_count += 1
@@ -122,16 +102,13 @@ def crawlers_logic():
         if retry_crawler:
             log.info(f"Retrying {len(retry_crawler)} failed crawlers")
             for crawler_name in retry_crawler:
-                safe_fetch(crawler_name, factory[crawler_name], date_str, is_retry=True)
-        
-        # 记录今天已运行爬虫
-        cache.set_cache(f"crawler:run_date:{date_str}", "1", expire=86400)
+                safe_fetch(crawler_name, crawler_factory[crawler_name], date_str, is_retry=True)
         
         # 记录完成时间
         end_time = datetime.now(SHANGHAI_TZ)
         duration = (end_time - now_time).total_seconds()
         log.info(f"Crawler job finished at {end_time.strftime('%Y-%m-%d %H:%M:%S')}, "
-                 f"duration: {duration:.2f}s, success: {success_count}/{len(factory)}")
+                 f"duration: {duration:.2f}s, success: {success_count}/{len(crawler_factory)}")
         
         return success_count
     

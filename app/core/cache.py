@@ -32,22 +32,21 @@ def set_cache(key: str, value: Any, expire: int = DEFAULT_EXPIRE) -> bool:
     """设置缓存，支持自动序列化复杂对象"""
     try:
         redis = get_redis_client()
-        
-        # 序列化值
         if isinstance(value, (dict, list, tuple)):
             value = json.dumps(value)
         elif isinstance(value, bool):
-            value = "1" if value else "0"  # 将布尔值转换为字符串
-        
-        # 设置缓存
-        redis.set(key, value, ex=expire)
+            value = "1" if value else "0"
+
+        if expire > 0:
+            redis.setex(key, expire, value)
+        else:
+            redis.set(key, value)
         return True
     except Exception as e:
-        log.error(f"Error setting cache for key {key}: {e}")
+        log.error(f"Error setting cache for key111111 {key}: {e}")
         return False
 
 def get_cache(key: str) -> Optional[Any]:
-    """获取缓存，自动反序列化JSON数据"""
     try:
         redis = get_redis_client()
         value = redis.get(key)
@@ -55,7 +54,6 @@ def get_cache(key: str) -> Optional[Any]:
         if value is None:
             return None
         
-        # 尝试反序列化JSON
         if isinstance(value, bytes):
             value = value.decode('utf-8')
             
@@ -68,7 +66,6 @@ def get_cache(key: str) -> Optional[Any]:
         return None
 
 def delete_cache(key: str) -> bool:
-    """删除缓存"""
     try:
         redis = get_redis_client()
         redis.delete(key)
@@ -78,7 +75,6 @@ def delete_cache(key: str) -> bool:
         return False
 
 def clear_cache_pattern(pattern: str) -> int:
-    """清除匹配模式的所有缓存"""
     try:
         redis = get_redis_client()
         keys = redis.keys(pattern)
@@ -105,7 +101,6 @@ def _get(key):
 
 
 def _set(key, value, ex=None):
-
     try:
         redis_client = get_redis_client()
     except Exception as e:

@@ -8,7 +8,7 @@ from app.utils.logger import log
 from app.core.config import get_scheduler_config
 
 # 创建爬虫工厂
-factory = CrawlerRegister().register()
+crawler_factory = CrawlerRegister().register()
 
 # 获取调度器配置
 scheduler_config = get_scheduler_config()
