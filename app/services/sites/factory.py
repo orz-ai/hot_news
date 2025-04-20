@@ -27,20 +27,20 @@ class CrawlerRegister:
         """注册所有爬虫"""
         # 注册所有爬虫
         crawler_map = {
-            "baidu": BaiduNewsCrawler(),
-            "shaoshupai": ShaoShuPaiCrawler(),
-            "weibo": WeiboCrawler(),
-            "zhihu": ZhiHuCrawler(),
-            "36kr": TsKrCrawler(),
+            # "baidu": BaiduNewsCrawler(),
+            # "shaoshupai": ShaoShuPaiCrawler(),
+            # "weibo": WeiboCrawler(),
+            # "zhihu": ZhiHuCrawler(),
+            # "36kr": TsKrCrawler(),
             "52pojie": FtPoJieCrawler(),
-            "bilibili": BilibiliCrawler(),
-            "douban": DouBanCrawler(),
-            "hupu": HuPuCrawler(),
-            "tieba": TieBaCrawler(),
-            "juejin": JueJinCrawler(),
-            "douyin": DouYinCrawler(),
-            "v2ex": VtexCrawler(),
-            "jinritoutiao": JinRiTouTiaoCrawler(),
+            # "bilibili": BilibiliCrawler(),
+            # "douban": DouBanCrawler(),
+            # "hupu": HuPuCrawler(),
+            # "tieba": TieBaCrawler(),
+            # "juejin": JueJinCrawler(),
+            # "douyin": DouYinCrawler(),
+            # "v2ex": VtexCrawler(),
+            # "jinritoutiao": JinRiTouTiaoCrawler(),
         }
         
         self.crawlers = crawler_map

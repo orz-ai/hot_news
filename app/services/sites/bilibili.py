@@ -3,7 +3,6 @@ import datetime
 
 import requests
 import urllib3
-from bs4 import BeautifulSoup
 
 from .crawler import Crawler
 from ...core import cache
@@ -16,48 +15,48 @@ class BilibiliCrawler(Crawler):
 
     def fetch(self, date_str):
         current_time = datetime.datetime.now()
-        
-        url = "https://www.bilibili.com/v/popular/rank/all"
-        
-        resp = requests.get(url=url, headers=self.header, verify=False, timeout=self.timeout)
+
+        url = "https://api.bilibili.com/x/web-interface/ranking/v2?rid=0&type=all"
+
+        headers = {
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
+                "Chrome/122.0.0.0 Safari/537.36"
+            ),
+            "Referer": "https://www.bilibili.com/",
+        }
+
+        resp = requests.get(url=url, headers=headers, verify=False, timeout=self.timeout)
         if resp.status_code != 200:
             print(f"request failed, status: {resp.status_code}")
             return []
-            
-        html_text = resp.text
-        soup = BeautifulSoup(html_text, "html.parser")
-        
-        rank_list = soup.find('ul', class_='rank-list')
-        if not rank_list:
+
+        data = resp.json()
+        if data["code"] != 0:
+            print(f"API error: {data['message']}")
             return []
-            
-        items = rank_list.find_all('li', class_='rank-item')
-        
+
         result = []
         cache_list = []
-        
-        for item in items:
-            title_elem = item.find('a', class_='title')
-            if not title_elem:
-                continue
-                
-            title = title_elem.text.strip()
-            url = "https:" + title_elem.get('href') if title_elem.get('href').startswith('//') else title_elem.get('href')
-            
-            desc_elem = item.find('div', class_='detail')
-            desc = desc_elem.text.strip() if desc_elem else ""
-            
+
+        for item in data["data"].get("list", []):
+            title = item.get("title", "")
+            bvid = item.get("bvid", "")
+            desc = item.get("desc", "")
+            video_url = f"https://www.bilibili.com/video/{bvid}"
+
             news = {
                 'title': title,
-                'url': url,
+                'url': video_url,
                 'content': desc,
                 'source': 'bilibili',
                 'publish_time': current_time.strftime('%Y-%m-%d %H:%M:%S')
             }
-            
+
             result.append(news)
             cache_list.append(news)
-            
+
         cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
 

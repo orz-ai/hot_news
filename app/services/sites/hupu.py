@@ -32,25 +32,25 @@ class HuPuCrawler(Crawler):
         soup = BeautifulSoup(html_text, "html.parser")
         
         # 找到热门帖子列表
-        post_list = soup.find_all('li', class_='bbs-sl-web-post-body')
+        post_list = soup.find_all('div', class_='t-info')
         
         result = []
         cache_list = []
         
         for post in post_list:
-            title_elem = post.find('span', class_='p-title')
+            title_elem = post.find('span', class_='t-title')
             if not title_elem:
                 continue
                 
             link_elem = post.find('a')
             if not link_elem:
                 continue
-                
+
             title = title_elem.text.strip()
             url = "https://bbs.hupu.com" + link_elem.get('href') if link_elem.get('href').startswith('/') else link_elem.get('href')
             
             # 获取帖子信息
-            info_elem = post.find('span', class_='post-info')
+            info_elem = post.find('span', class_='t-replies')
             info = info_elem.text.strip() if info_elem else ""
             
             news = {

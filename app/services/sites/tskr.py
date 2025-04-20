@@ -29,27 +29,23 @@ class TsKrCrawler(Crawler):
         soup = BeautifulSoup(html_text, "html.parser")
         
         # 找到热门文章列表
-        article_list = soup.find_all('div', class_='hotlist-item-toptwo')
+        article_list = soup.find_all('div', class_='article-wrapper')
         if not article_list:
-            article_list = soup.find_all('div', class_='hotlist-item-other')
+            return []
         
         result = []
         cache_list = []
         
         for article in article_list:
-            title_elem = article.find('p', class_='title')
+            title_elem = article.find('a', class_='article-item-title')
             if not title_elem:
                 continue
                 
-            link_elem = article.find('a')
-            if not link_elem:
-                continue
-                
             title = title_elem.text.strip()
-            url = "https://36kr.com" + link_elem.get('href') if link_elem.get('href').startswith('/') else link_elem.get('href')
+            url = "https://36kr.com" + title_elem.get('href') if title_elem.get('href').startswith('/') else title_elem.get('href')
             
             # 获取文章摘要
-            desc_elem = article.find('div', class_='summary')
+            desc_elem = article.find('a', class_='article-item-description')
             desc = desc_elem.text.strip() if desc_elem else ""
             
             news = {
