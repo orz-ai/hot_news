@@ -13,6 +13,7 @@ from app.api.v1 import daily_news, web_tools
 from app.utils.logger import log
 from app.core import db, cache
 from app.core.config import get_app_config, get_config
+from app.services.browser_manager import BrowserManager
 
 # 获取应用配置
 app_config = get_app_config()
@@ -36,6 +37,13 @@ async def lifespan(app: FastAPI):
     
     # 关闭时执行
     log.info("Application shutdown")
+    
+    # 关闭浏览器管理器
+    try:
+        BrowserManager().shutdown()
+        log.info("Browser manager shutdown")
+    except Exception as e:
+        log.error(f"Error shutting down browser manager: {e}")
     
     # 关闭数据库连接
     db.close_db()

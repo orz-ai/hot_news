@@ -25,7 +25,6 @@ class CrawlerRegister:
     
     def register(self) -> Dict[str, Crawler]:
         """注册所有爬虫"""
-        # 注册所有爬虫
         crawler_map = {
             "baidu": BaiduNewsCrawler(),
             "shaoshupai": ShaoShuPaiCrawler(),
