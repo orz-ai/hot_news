@@ -28,7 +28,6 @@
 | douyin | 抖音 | 短视频热点、娱乐 | 30分钟 |
 | v2ex | V2EX | 技术、编程、创意 | 30分钟 |
 | jinritoutiao | 今日头条 | 新闻、热点事件 | 30分钟 |
-| weixin | 微信热点 | 公众号热文、社会话题 | 30分钟 |
 | stackoverflow | Stack Overflow | 编程问答、技术讨论 | 30分钟 |
 | github | GitHub Trending | 开源项目、编程语言 | 30分钟 |
 | hackernews | Hacker News | 科技新闻、创业、编程 | 30分钟 |
@@ -40,7 +39,7 @@
   - `platform`: 指定平台。支持的平台有：
     - [x] baidu
     - [x] shaoshupai
-    - ......
+    - [x] ......
 
 - **请求示例**:
   ```shell

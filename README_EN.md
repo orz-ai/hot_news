@@ -30,7 +30,6 @@ We currently support trending content from the following platforms:
 | douyin | TikTok/Douyin | Short video trends, entertainment | 30 minutes |
 | v2ex | V2EX | Technology, programming, creativity | 30 minutes |
 | jinritoutiao | Toutiao | News, trending events | 30 minutes |
-| weixin | WeChat Trending | Official account articles, social topics | 30 minutes |
 | stackoverflow | Stack Overflow | Programming Q&A, technical discussions | 30 minutes |
 | github | GitHub Trending | Open source projects, programming languages | 30 minutes |
 | hackernews | Hacker News | Tech news, startups, programming | 30 minutes |
@@ -42,7 +41,7 @@ We currently support trending content from the following platforms:
   - `platform`: Specify the platform. Supported platforms are:
 	  - [x] baidu
 	  - [x] shaoshupai
-      - ......
+      - [x] ....
 
 
 - **Example Request**:
