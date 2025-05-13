@@ -11,12 +11,12 @@ from ...db.mysql import News
 urllib3.disable_warnings()
 
 
-class BilibiliCrawler(Crawler):
+class TenXunWangCrawler(Crawler):
 
     def fetch(self, date_str):
         current_time = datetime.datetime.now()
 
-        url = "https://api.bilibili.com/x/web-interface/popular"
+        url = "https://i.news.qq.com/gw/event/pc_hot_ranking_list?ids_hash=&offset=0&page_size=51&appver=15.5_qqnews_7.1.60&rank_id=hot"
 
         headers = {
             "User-Agent": (
@@ -24,7 +24,7 @@ class BilibiliCrawler(Crawler):
                 "Chrome/122.0.0.0 Safari/537.36"
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
             ),
-            "Referer": "https://www.bilibili.com/",
+            "Referer": "https://news.qq.com/",
         }
 
         resp = requests.get(url=url, headers=headers, verify=False, timeout=self.timeout)
@@ -33,24 +33,24 @@ class BilibiliCrawler(Crawler):
             return []
 
         data = resp.json()
-        if data["code"] != 0:
-            print(f"API error: {data['message']}")
-            return []
-
         result = []
         cache_list = []
 
-        for item in data["data"].get("list", []):
+
+        for i, item in enumerate(data["idlist"][0].get("newslist", [])):
+            if i == 0:
+                # 腾讯新闻用户最关注的热点，每10分钟更新一次
+                continue
+
             title = item.get("title", "")
-            bvid = item.get("bvid", "")
-            desc = item.get("desc", "")
-            video_url = f"https://www.bilibili.com/video/{bvid}"
+            url = item.get("url", "")
+            desc = item.get("abstract", "")
 
             news = {
                 'title': title,
-                'url': video_url,
+                'url': url,
                 'content': desc,
-                'source': 'bilibili',
+                'source': 'tenxunwang',
                 'publish_time': current_time.strftime('%Y-%m-%d %H:%M:%S')
             }
 
@@ -61,4 +61,4 @@ class BilibiliCrawler(Crawler):
         return result
 
     def crawler_name(self):
-        return "bilibili"
+        return "tenxunwang"

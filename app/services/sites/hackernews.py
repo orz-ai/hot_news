@@ -1,111 +1,235 @@
 import json
 import datetime
 import time
-
 import requests
-from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
+import urllib3
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from ...core import cache
 from ...db.mysql import News
 from .crawler import Crawler
 from ..browser_manager import BrowserManager
 
+# 禁用SSL警告
+urllib3.disable_warnings()
 
-class DouYinCrawler(Crawler):
+class HackerNewsCrawler(Crawler):
     def fetch(self, date_str):
-        return self.fetch_v2(date_str)
-
-    def fetch_v1(self, date_str):
+        """获取Hacker News热门内容"""
         current_time = datetime.datetime.now()
-        url = "https://www.douyin.com/hot"
-        browser_manager = BrowserManager()
         
         try:
-            # 使用浏览器管理器获取页面内容
-            page_source, driver = browser_manager.get_page_content(url, wait_time=5)
+            # 首先尝试直接请求方式获取内容
+            result = self._fetch_with_requests()
+            
+            if result and len(result) > 0:
+                # 缓存数据
+                cache._hset(date_str, self.crawler_name(), json.dumps(result, ensure_ascii=False))
+                return result
+                
+            # 如果请求方式失败，尝试使用浏览器模拟获取
+            browser_manager = BrowserManager()
+            result = self._fetch_with_browser(browser_manager)
+            if result and len(result) > 0:
+                # 缓存数据
+                cache._hset(date_str, self.crawler_name(), json.dumps(result, ensure_ascii=False))
+                return result
+                
+        except Exception as e:
+            # 如果遇到错误，返回空列表
+            return []
+            
+        # 所有方法都失败，返回空列表
+        return []
+    
+    def _fetch_with_requests(self):
+        """使用requests直接获取Hacker News内容"""
+        url = "https://news.ycombinator.com/"
+        
+        try:
+            # 发送HTTP请求
+            response = requests.get(url, headers=self.header, timeout=self.timeout)
+            if response.status_code != 200:
+                return []
+                
+            # 解析HTML内容
+            soup = BeautifulSoup(response.text, 'html.parser')
             
             result = []
-            cache_list = []
-
-            # 抖音热榜条目（li 标签里含 /video/ 链接）
-            items = driver.find_elements(By.XPATH, '//li[a[contains(@href, "/video/")]]')
-
+            current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            
+            # 获取所有新闻条目
+            items = soup.select("tr.athing")
+            
             for item in items:
                 try:
-                    # 提取标题（含 # 标签或较长文本）
-                    title_elem = item.find_element(By.XPATH, './/div[contains(text(), "#") or string-length(text()) > 10]')
-                    # 提取链接
-                    link_elem = item.find_element(By.XPATH, './/a[contains(@href, "/video/")]')
-                    # 提取热度
-                    hot_elem = item.find_element(By.XPATH, './/span[contains(text(), "万") or contains(text(), "亿")]')
-
-                    title = title_elem.text.strip()
-                    item_url = "https://www.douyin.com" + link_elem.get_attribute("href")
-                    hot = hot_elem.text.strip()
-
+                    # 获取ID用于关联评论和元数据
+                    item_id = item.get('id')
+                    if not item_id:
+                        continue
+                        
+                    # 获取标题和链接
+                    title_element = item.select_one(".titleline a")
+                    if not title_element:
+                        continue
+                        
+                    title = title_element.text.strip()
+                    url = title_element.get('href')
+                    
+                    # 如果URL是相对路径，转换为绝对路径
+                    if url and not url.startswith('http'):
+                        url = f"https://news.ycombinator.com/{url}"
+                    
+                    # 获取来源网站
+                    site_element = item.select_one(".sitestr")
+                    site = site_element.text.strip() if site_element else ""
+                    
+                    # 查找下一个tr获取元数据（分数、用户、时间等）
+                    metadata = item.find_next_sibling('tr')
+                    if not metadata:
+                        continue
+                        
+                    # 获取分数
+                    score_element = metadata.select_one(".score")
+                    score = score_element.text.strip() if score_element else "0 points"
+                    
+                    # 获取作者
+                    user_element = metadata.select_one(".hnuser")
+                    user = user_element.text.strip() if user_element else "unknown"
+                    
+                    # 获取评论数
+                    comments_element = metadata.select_one("a:last-child")
+                    comments = comments_element.text.strip() if comments_element else "0 comments"
+                    if "discuss" in comments:
+                        comments = "0 comments"
+                    
+                    # 构建内容摘要
+                    content = f"来源: {site} | 得分: {score} | 作者: {user} | 评论: {comments}"
+                    
                     news = {
                         'title': title,
-                        'url': item_url,
-                        'content': f"热度: {hot}",
-                        'source': 'douyin',
-                        'publish_time': current_time.strftime('%Y-%m-%d %H:%M:%S')
+                        'url': url,
+                        'content': content,
+                        'source': 'hackernews',
+                        'publish_time': current_time
                     }
-
+                    
                     result.append(news)
-                    cache_list.append(news)
-                except Exception:
-                    continue  # 跳过无效项
-            
-            # 缓存并返回
-            if cache_list:
-                cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+                    
+                    # 限制获取前30条
+                    if len(result) >= 30:
+                        break
+                        
+                except Exception as e:
+                    continue
+                    
             return result
             
         except Exception as e:
             return []
-
-    def fetch_v2(self, date_str):
-        current_time = datetime.datetime.now()
-        url = "https://www.douyin.com/aweme/v1/web/hot/search/list/?device_platform=webapp&aid=6383&channel=channel_pc_web&detail_list=1&source=6&pc_client_type=1&pc_libra_divert=Windows&support_h265=1&support_dash=1&version_code=170400&version_name=17.4.0&cookie_enabled=true&screen_width=1920&screen_height=1080&browser_language=zh-CN&browser_platform=Win32&browser_name=Chrome&browser_version=136.0.0.0&browser_online=true&engine_name=Blink&engine_version=136.0.0.0&os_name=Windows&os_version=10&cpu_core_num=16&device_memory=8&platform=PC&downlink=10&effective_type=4g&round_trip_time=50&webid=7490997798633555467"
-
-        headers = {
-            "User-Agent": (
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "Chrome/122.0.0.0 Safari/537.36"
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
-            ),
-            "Referer": "https://www.douyin.com/",
-        }
-
-        resp = requests.get(url=url, headers=headers, verify=False, timeout=self.timeout)
-        if resp.status_code != 200:
-            print(f"request failed, status: {resp.status_code}")
+    
+    def _fetch_with_browser(self, browser_manager):
+        """使用浏览器模拟方式获取Hacker News内容"""
+        url = "https://news.ycombinator.com/"
+        
+        try:
+            # 获取页面内容
+            page_source, driver = browser_manager.get_page_content(url, wait_time=5)
+            
+            # 等待页面元素加载
+            try:
+                WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, ".athing"))
+                )
+            except:
+                # 如果等待超时，仍然尝试获取内容
+                pass
+            
+            result = []
+            current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            
+            # 获取所有新闻条目
+            items = driver.find_elements(By.CSS_SELECTOR, "tr.athing")
+            
+            for item in items:
+                try:
+                    # 获取ID用于关联评论和元数据
+                    item_id = item.get_attribute("id")
+                    if not item_id:
+                        continue
+                    
+                    # 获取标题和链接
+                    title_element = item.find_element(By.CSS_SELECTOR, ".titleline a")
+                    title = title_element.text.strip()
+                    url = title_element.get_attribute("href")
+                    
+                    # 获取来源网站
+                    site = ""
+                    try:
+                        site_element = item.find_element(By.CSS_SELECTOR, ".sitestr")
+                        site = site_element.text.strip()
+                    except:
+                        pass
+                    
+                    # 查找下一个tr获取元数据（分数、用户、时间等）
+                    try:
+                        metadata = driver.find_element(By.XPATH, f"//tr[@id='{item_id}']/following-sibling::tr[1]")
+                        
+                        # 获取分数
+                        score = "0 points"
+                        try:
+                            score_element = metadata.find_element(By.CSS_SELECTOR, ".score")
+                            score = score_element.text.strip()
+                        except:
+                            pass
+                        
+                        # 获取作者
+                        user = "unknown"
+                        try:
+                            user_element = metadata.find_element(By.CSS_SELECTOR, ".hnuser")
+                            user = user_element.text.strip()
+                        except:
+                            pass
+                        
+                        # 获取评论数
+                        comments = "0 comments"
+                        try:
+                            comments_element = metadata.find_element(By.XPATH, ".//a[last()]")
+                            comments = comments_element.text.strip()
+                            if "discuss" in comments:
+                                comments = "0 comments"
+                        except:
+                            pass
+                        
+                        # 构建内容摘要
+                        content = f"来源: {site} | 得分: {score} | 作者: {user} | 评论: {comments}"
+                    except:
+                        content = f"来源: {site}"
+                    
+                    news = {
+                        'title': title,
+                        'url': url,
+                        'content': content,
+                        'source': 'hackernews',
+                        'publish_time': current_time
+                    }
+                    
+                    result.append(news)
+                    
+                    # 限制获取前30条
+                    if len(result) >= 30:
+                        break
+                        
+                except Exception as e:
+                    continue
+                    
+            return result
+            
+        except Exception as e:
             return []
-
-        data = resp.json()
-        # https://www.douyin.com/hot/2094286?&trending_topic=%E5%A4%8F%E5%A4%A9%E7%9A%84%E5%91%B3%E9%81%93%E5%9C%A8%E6%8A%96%E9%9F%B3&previous_page=main_page&enter_method=trending_topic&modeFrom=hotDetail&tab_name=trend&position=1&hotValue=11892557
-        result = []
-        cache_list = []
-
-        for item in data["data"]["word_list"]:
-            title = item["word"]
-            url =  f"https://www.douyin.com/hot/{item['sentence_id']}?&trending_topic={item['word']}&previous_page=main_page&enter_method=trending_topic&modeFrom=hotDetail&tab_name=trend&position=1&hotValue={item['hot_value']}"
-
-            news = {
-                'title': title,
-                'url': url,
-                'content': title,
-                'source': 'douyin',
-                'publish_time': current_time.strftime('%Y-%m-%d %H:%M:%S')
-            }
-
-            result.append(news)
-            cache_list.append(news)
-
-        cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
-        return result
-
-
+    
     def crawler_name(self):
-        return "douyin"
+        return "hackernews"

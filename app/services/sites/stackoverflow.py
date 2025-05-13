@@ -11,12 +11,11 @@ from ...db.mysql import News
 urllib3.disable_warnings()
 
 
-class TenXunWangCrawler(Crawler):
-
+class StackOverflowCrawler(Crawler):
     def fetch(self, date_str):
         current_time = datetime.datetime.now()
 
-        url = "https://i.news.qq.com/gw/event/pc_hot_ranking_list?ids_hash=&offset=0&page_size=51&appver=15.5_qqnews_7.1.60&rank_id=hot"
+        url = "https://api.stackexchange.com/2.3/questions?order=desc&sort=hot&site=stackoverflow"
 
         headers = {
             "User-Agent": (
@@ -24,7 +23,7 @@ class TenXunWangCrawler(Crawler):
                 "Chrome/122.0.0.0 Safari/537.36"
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
             ),
-            "Referer": "https://news.qq.com/",
+            "Referer": "https://stackoverflow.com/",
         }
 
         resp = requests.get(url=url, headers=headers, verify=False, timeout=self.timeout)
@@ -36,21 +35,16 @@ class TenXunWangCrawler(Crawler):
         result = []
         cache_list = []
 
-
-        for i, item in enumerate(data["idlist"][0].get("newslist", [])):
-            if i == 0:
-                # 腾讯新闻用户最关注的热点，每10分钟更新一次
-                continue
-
+        for i, item in enumerate(data["items"]):
             title = item.get("title", "")
-            url = item.get("url", "")
-            desc = item.get("abstract", "")
+            url = item.get("link", "")
+            desc = item.get("title", "")
 
             news = {
                 'title': title,
                 'url': url,
                 'content': desc,
-                'source': 'tenxunwang',
+                'source': 'stackoverflow',
                 'publish_time': current_time.strftime('%Y-%m-%d %H:%M:%S')
             }
 
@@ -61,4 +55,4 @@ class TenXunWangCrawler(Crawler):
         return result
 
     def crawler_name(self):
-        return "bilibili"
+        return "stackoverflow"

@@ -11,11 +11,11 @@ from ...db.mysql import News
 urllib3.disable_warnings()
 
 
-class StackOverflowCrawler(Crawler):
+class GithubCrawler(Crawler):
     def fetch(self, date_str):
         current_time = datetime.datetime.now()
 
-        url = "https://api.stackexchange.com/2.3/questions?order=desc&sort=hot&site=stackoverflow"
+        url = "https://api.github.com/search/repositories?q=stars:%3E1&sort=stars"
 
         headers = {
             "User-Agent": (
@@ -23,7 +23,7 @@ class StackOverflowCrawler(Crawler):
                 "Chrome/122.0.0.0 Safari/537.36"
                 "AppleWebKit/537.36 (KHTML, like Gecko) "
             ),
-            "Referer": "https://stackoverflow.com/",
+            "Referer": "https://github.com/",
         }
 
         resp = requests.get(url=url, headers=headers, verify=False, timeout=self.timeout)
@@ -36,15 +36,15 @@ class StackOverflowCrawler(Crawler):
         cache_list = []
 
         for i, item in enumerate(data["items"]):
-            title = item.get("title", "")
-            url = item.get("link", "")
-            desc = item.get("title", "")
+            title = item.get("full_name", "")
+            url = item.get("html_url", "")
+            desc = item.get("description", "")
 
             news = {
                 'title': title,
                 'url': url,
                 'content': desc,
-                'source': 'stackoverflow',
+                'source': self.crawler_name(),
                 'publish_time': current_time.strftime('%Y-%m-%d %H:%M:%S')
             }
 
@@ -55,4 +55,4 @@ class StackOverflowCrawler(Crawler):
         return result
 
     def crawler_name(self):
-        return "stackoverflow"
+        return "github"

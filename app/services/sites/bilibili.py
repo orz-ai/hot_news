@@ -16,13 +16,13 @@ class BilibiliCrawler(Crawler):
     def fetch(self, date_str):
         current_time = datetime.datetime.now()
 
-        url = "https://api.bilibili.com/x/web-interface/ranking/v2?rid=0&type=all"
+        url = "https://api.bilibili.com/x/web-interface/popular"
 
         headers = {
             "User-Agent": (
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                "AppleWebKit/537.36 (KHTML, like Gecko) "
                 "Chrome/122.0.0.0 Safari/537.36"
+                "AppleWebKit/537.36 (KHTML, like Gecko) "
             ),
             "Referer": "https://www.bilibili.com/",
         }
