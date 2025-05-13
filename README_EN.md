@@ -8,6 +8,31 @@ The Daily Hot News API provides access to real-time hot news data from various p
 
 - **Base URL**: `https://orz.ai/api/v1/dailynews`
 
+## Supported Platforms
+
+We currently support trending content from the following platforms:
+
+| Platform Code | Platform Name | Content Type | Update Frequency |
+|---------------|---------------|--------------|------------------|
+| baidu | Baidu Hot Search | Social trends, entertainment, events | Real-time |
+| shaoshupai | Sspai | Tech, digital, lifestyle | Daily |
+| weibo | Weibo Hot Search | Social media trends, entertainment, events | Real-time |
+| zhihu | Zhihu Hot List | Q&A, in-depth content, social topics | Hourly |
+| 36kr | 36Kr | Tech startups, business news | Daily |
+| 52pojie | 52Pojie Forum | Technology, software, security | Daily |
+| bilibili | Bilibili | Videos, anime, gaming, lifestyle | Hourly |
+| douban | Douban | Books, movies, music, culture | Daily |
+| hupu | Hupu | Sports, gaming, digital | Hourly |
+| tieba | Baidu Tieba | Interest communities, topic discussions | Daily |
+| juejin | Juejin | Programming, technical articles | Daily |
+| douyin | TikTok/Douyin | Short video trends, entertainment | Hourly |
+| v2ex | V2EX | Technology, programming, creativity | Daily |
+| jinritoutiao | Toutiao | News, trending events | Real-time |
+| weixin | WeChat Trending | Official account articles, social topics | Daily |
+| stackoverflow | Stack Overflow | Programming Q&A, technical discussions | Daily |
+| github | GitHub Trending | Open source projects, programming languages | Daily |
+| hackernews | Hacker News | Tech news, startups, programming | Hourly |
+
 ## Usage
 
 - **Method**: `GET`
@@ -39,7 +64,7 @@ The Daily Hot News API provides access to real-time hot news data from various p
     "status": "200",
     "data": [
       {
-        "title": "32岁“母单”女孩：6年相亲百人",
+        "title": "32岁"母单"女孩：6年相亲百人",
         "url": "https://www.baidu.com/s?word=32%E5%B2%81%E2%80%9C%E6%AF%8D%E5%8D%95%E2%80%9D%E5%A5%B3%E5%AD%A9%EF%BC%9A6%E5%B9%B4%E7%9B%B8%E4%BA%B2%E7%99%BE%E4%BA%BA&sa=fyb_news",
         "score": "4955232",
         "desc": ""
