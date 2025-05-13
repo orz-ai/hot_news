@@ -10,28 +10,30 @@ The Daily Hot News API provides access to real-time hot news data from various p
 
 ## Supported Platforms
 
+## Supported Platforms
+
 We currently support trending content from the following platforms:
 
 | Platform Code | Platform Name | Content Type | Update Frequency |
 |---------------|---------------|--------------|------------------|
-| baidu | Baidu Hot Search | Social trends, entertainment, events | Real-time |
-| shaoshupai | Sspai | Tech, digital, lifestyle | Daily |
-| weibo | Weibo Hot Search | Social media trends, entertainment, events | Real-time |
-| zhihu | Zhihu Hot List | Q&A, in-depth content, social topics | Hourly |
-| 36kr | 36Kr | Tech startups, business news | Daily |
-| 52pojie | 52Pojie Forum | Technology, software, security | Daily |
-| bilibili | Bilibili | Videos, anime, gaming, lifestyle | Hourly |
-| douban | Douban | Books, movies, music, culture | Daily |
-| hupu | Hupu | Sports, gaming, digital | Hourly |
-| tieba | Baidu Tieba | Interest communities, topic discussions | Daily |
-| juejin | Juejin | Programming, technical articles | Daily |
-| douyin | TikTok/Douyin | Short video trends, entertainment | Hourly |
-| v2ex | V2EX | Technology, programming, creativity | Daily |
-| jinritoutiao | Toutiao | News, trending events | Real-time |
-| weixin | WeChat Trending | Official account articles, social topics | Daily |
-| stackoverflow | Stack Overflow | Programming Q&A, technical discussions | Daily |
-| github | GitHub Trending | Open source projects, programming languages | Daily |
-| hackernews | Hacker News | Tech news, startups, programming | Hourly |
+| baidu | Baidu Hot Search | Social trends, entertainment, events | 30 minutes |
+| shaoshupai | Sspai | Tech, digital, lifestyle | 30 minutes |
+| weibo | Weibo Hot Search | Social media trends, entertainment, events | 30 minutes |
+| zhihu | Zhihu Hot List | Q&A, in-depth content, social topics | 30 minutes |
+| 36kr | 36Kr | Tech startups, business news | 30 minutes |
+| 52pojie | 52Pojie Forum | Technology, software, security | 30 minutes |
+| bilibili | Bilibili | Videos, anime, gaming, lifestyle | 30 minutes |
+| douban | Douban | Books, movies, music, culture | 30 minutes |
+| hupu | Hupu | Sports, gaming, digital | 30 minutes |
+| tieba | Baidu Tieba | Interest communities, topic discussions | 30 minutes |
+| juejin | Juejin | Programming, technical articles | 30 minutes |
+| douyin | TikTok/Douyin | Short video trends, entertainment | 30 minutes |
+| v2ex | V2EX | Technology, programming, creativity | 30 minutes |
+| jinritoutiao | Toutiao | News, trending events | 30 minutes |
+| weixin | WeChat Trending | Official account articles, social topics | 30 minutes |
+| stackoverflow | Stack Overflow | Programming Q&A, technical discussions | 30 minutes |
+| github | GitHub Trending | Open source projects, programming languages | 30 minutes |
+| hackernews | Hacker News | Tech news, startups, programming | 30 minutes |
 
 ## Usage
 
@@ -40,18 +42,8 @@ We currently support trending content from the following platforms:
   - `platform`: Specify the platform. Supported platforms are:
 	  - [x] baidu
 	  - [x] shaoshupai
-	  - [x] weibo
-	  - [x] zhihu
-	  - [x] 36kr
-	  - [x] 52pojie
-	  - [x] bilibili
-	  - [x] douban
-	  - [x] hupu
-	  - [x] tieba
-	  - [x] juejin
-	  - [x] douyin
-	  - [x] v2ex
-      - [x] jinritoutiao
+      - ......
+
 
 - **Example Request**:
   ```shell

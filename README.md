@@ -40,18 +40,7 @@
   - `platform`: 指定平台。支持的平台有：
     - [x] baidu
     - [x] shaoshupai
-    - [x] weibo
-    - [x] zhihu
-    - [x] 36kr
-    - [x] 52pojie
-    - [x] bilibili
-    - [x] douban
-    - [x] hupu
-    - [x] tieba
-    - [x] juejin
-    - [x] douyin
-    - [x] v2ex
-    - [x] jinritoutiao
+    - ......
 
 - **请求示例**:
   ```shell
