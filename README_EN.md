@@ -2,6 +2,8 @@
 
 # Daily Hot News API
 
+**Website:** https://news.orz.ai
+
 ## Overview
 
 The Daily Hot News API provides access to real-time hot news data from various platforms. The data is refreshed automatically about every half an hour. This API can be used to retrieve hot news headlines along with their URLs and scores.
