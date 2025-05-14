@@ -2,7 +2,7 @@
 
 # 每日热点新闻 API
 
-**前端地址：**https://news.orz.ai
+**临时网站：** https://news.orz.ai
 
 ## 概述
 
