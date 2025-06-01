@@ -15,3 +15,4 @@ PyYAML~=6.0.2
 cloudscraper~=1.2.71
 selenium~=4.29.0
 webdriver-manager~=4.0.2
+jieba>=0.42.1

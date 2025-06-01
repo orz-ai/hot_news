@@ -9,7 +9,7 @@ import uvicorn
 
 import app.services.crawler as crawler
 import tg_bot as tg_bot
-from app.api.v1 import daily_news, web_tools
+from app.api.v1 import daily_news, web_tools, analysis
 from app.utils.logger import log
 from app.core import db, cache
 from app.core.config import get_app_config, get_config
@@ -31,7 +31,7 @@ async def lifespan(app: FastAPI):
     cache.init_cache()
     
     # 异步启动爬虫，避免阻塞应用启动
-    threading.Thread(target=crawler.crawlers_logic, daemon=True).start()
+    # threading.Thread(target=crawler.crawlers_logic, daemon=True).start()
     
     yield
     
@@ -80,6 +80,7 @@ async def add_process_time_header(request: Request, call_next):
 # 注册路由
 app.include_router(daily_news.router, prefix="/api/v1/dailynews", tags=["Daily News"])
 app.include_router(web_tools.router, prefix="/api/v1/tools/website-meta", tags=["Website Meta"])
+app.include_router(analysis.router, prefix="/api/v1/analysis", tags=["Analysis"])
 
 # 健康检查端点
 @app.get("/health", tags=["Health"])
