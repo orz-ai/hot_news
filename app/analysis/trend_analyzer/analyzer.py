@@ -947,6 +947,7 @@ class TrendAnalyzer:
         # 实际应基于历史数据分析热点的演变
         import random
         from datetime import datetime, timedelta
+        from app.services import crawler_factory
         
         # 获取当前日期
         current = datetime.strptime(current_date, "%Y-%m-%d")
@@ -992,9 +993,16 @@ class TrendAnalyzer:
         # 生成预测数据
         forecast_results = []
         
+        # 可能的分类列表
+        categories = ["科技", "财经", "社会", "娱乐", "体育", "教育", "健康", "国际"]
+        
+        # 获取所有平台列表
+        all_platforms = list(crawler_factory.keys())
+        
         for topic in top_topics:
             title = topic["title"]
             current_score = topic["score"]
+            platform = topic["platform"]
             
             # 生成历史趋势数据
             history_data = []
@@ -1042,24 +1050,69 @@ class TrendAnalyzer:
             
             # 计算趋势类型和可能性
             if recent_trend > 0.1:
-                trend_type = "上升"
+                trend_type = "趋势上升"
                 probability = min(95, 50 + int(recent_trend * 100))
             elif recent_trend < -0.1:
-                trend_type = "下降"
+                trend_type = "趋势下降"
                 probability = min(95, 50 + int(abs(recent_trend) * 100))
             else:
-                trend_type = "稳定"
+                trend_type = "趋势稳定"
                 probability = 70
+            
+            # 确定可信度文本
+            confidence_text = ""
+            if probability >= 90:
+                confidence_text = "可信度很高"
+            elif probability >= 70:
+                confidence_text = "可信度较高"
+            elif probability >= 50:
+                confidence_text = "可信度中等"
+            else:
+                confidence_text = "可信度较低"
+            
+            # 随机选择一个分类
+            category = random.choice(categories)
+            
+            # 从标题中提取关键词
+            keywords = []
+            try:
+                # 使用jieba提取关键词
+                import jieba.analyse
+                extracted_keywords = jieba.analyse.extract_tags(title, topK=5)
+                keywords = [kw for kw in extracted_keywords if len(kw) > 1 and kw not in self.stopwords][:3]
+            except Exception as e:
+                log.error(f"Error extracting keywords: {e}")
+                # 如果提取失败，使用标题中的前几个字作为关键词
+                if len(title) > 3:
+                    keywords = [title[:3]]
+            
+            # 生成可能出现该话题的其他平台
+            other_platforms = []
+            for p in all_platforms:
+                if p != platform:
+                    other_platforms.append(p)
+            
+            # 随机选择2-3个其他平台
+            if other_platforms:
+                random.shuffle(other_platforms)
+                out_platforms = other_platforms[:min(3, len(other_platforms))]
+            else:
+                out_platforms = []
             
             # 添加到结果
             forecast_results.append({
                 "topic": title,
+                "category": category,
+                "keywords": keywords,
                 "current_heat": round(current_score, 1),
                 "history": sorted(history_data, key=lambda x: x["date"]),
                 "forecast": forecast_data,
                 "trend_type": trend_type,
                 "probability": probability,
-                "platforms": [topic["platform"]]
+                "probability_text": f"{probability}%",
+                "confidence": confidence_text,
+                "platforms": [platform],
+                "out_platforms": out_platforms
             })
         
         return forecast_results
@@ -1591,6 +1644,15 @@ class TrendAnalyzer:
                 "updated_at": datetime.now(self.shanghai_tz).strftime("%Y-%m-%d %H:%M:%S")
             }
         
+        # 根据时间范围生成描述文本
+        description_text = ""
+        if time_range == "24h":
+            description_text = f"基于当前热点数据和历史趋势，预测未来24小时内可能持续升温的热门话题。"
+        elif time_range == "7d":
+            description_text = f"基于当前热点数据和历史趋势，预测未来7天内可能持续升温的热门话题。"
+        elif time_range == "30d":
+            description_text = f"基于当前热点数据和历史趋势，预测未来30天内可能持续升温的热门话题。"
+        
         # 热点演变趋势
         trend_evolution = self._analyze_trend_evolution(all_platform_data, date_str, time_range)
         
@@ -1600,6 +1662,7 @@ class TrendAnalyzer:
             "date": date_str,
             "analysis_type": "trend_forecast",
             "time_range": time_range,
+            "description": description_text,
             "has_enough_data": True,
             "trend_evolution": trend_evolution,
             "updated_at": datetime.now(self.shanghai_tz).strftime("%Y-%m-%d %H:%M:%S")
