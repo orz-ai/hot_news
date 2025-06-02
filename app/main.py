@@ -31,7 +31,7 @@ async def lifespan(app: FastAPI):
     cache.init_cache()
     
     # 异步启动爬虫，避免阻塞应用启动
-    # threading.Thread(target=crawler.crawlers_logic, daemon=True).start()
+    threading.Thread(target=crawler.crawlers_logic, daemon=True).start()
     
     yield
     

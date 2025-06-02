@@ -1327,14 +1327,19 @@ class TrendAnalyzer:
         
         return platform_unique
 
-    def _extract_keyword_clouds(self, all_data: Dict[str, List]) -> Dict[str, List[Dict[str, Any]]]:
+    def _extract_keyword_clouds(self, all_data: Dict[str, List], keyword_count: int = 200) -> Dict[str, List[Dict[str, Any]]]:
         """提取关键词云图数据
         
         返回按类别分组的关键词云数据，包括全部类别和各个单独类别
+        
+        Args:
+            all_data: 所有平台的热点数据
+            keyword_count: 返回的关键词数量，默认为200
         """
         # 收集所有标题和内容
         all_titles = []
         category_titles = {category: [] for category in self.categories}
+        platform_titles = {platform: [] for platform in all_data.keys()}
         
         for platform, items in all_data.items():
             for item in items:
@@ -1346,6 +1351,9 @@ class TrendAnalyzer:
                     
                 # 添加到全部标题列表
                 all_titles.append(title)
+                
+                # 添加到对应平台的标题列表
+                platform_titles[platform].append(title)
                 
                 # 尝试分类并添加到对应类别
                 categorized = False
@@ -1359,17 +1367,30 @@ class TrendAnalyzer:
                     if categorized:
                         break
         
+        # 根据总关键词数量计算各部分的关键词数量
+        category_count = max(50, keyword_count // 2)  # 每个类别的关键词数量，至少50个
+        platform_count = max(50, keyword_count // 2)  # 每个平台的关键词数量，至少50个
+        
         # 提取全部关键词
-        all_keywords = self._extract_category_keywords(all_titles, 50)
+        all_keywords = self._extract_category_keywords(all_titles, keyword_count)
         
         # 提取各类别关键词
         category_keywords = {}
         for category, titles in category_titles.items():
             if titles:
-                # 每个类别提取最多30个关键词
-                category_keywords[category] = self._extract_category_keywords(titles, 30)
+                # 每个类别提取指定数量的关键词
+                category_keywords[category] = self._extract_category_keywords(titles, category_count)
             else:
                 category_keywords[category] = []
+        
+        # 提取各平台关键词
+        platform_keywords = {}
+        for platform, titles in platform_titles.items():
+            if titles:
+                # 每个平台提取指定数量的关键词
+                platform_keywords[platform] = self._extract_category_keywords(titles, platform_count)
+            else:
+                platform_keywords[platform] = []
         
         # 组织返回结果
         result = {
@@ -1379,6 +1400,10 @@ class TrendAnalyzer:
         # 添加各类别的关键词
         for category, keywords in category_keywords.items():
             result[category] = keywords
+            
+        # 添加各平台的关键词
+        for platform, keywords in platform_keywords.items():
+            result[f"platform_{platform}"] = keywords
             
         return result
         
@@ -1453,18 +1478,19 @@ class TrendAnalyzer:
         
         return result
     
-    def get_keyword_cloud(self, date_str: Optional[str] = None, refresh: bool = False) -> Dict[str, Any]:
+    def get_keyword_cloud(self, date_str: Optional[str] = None, refresh: bool = False, keyword_count: int = 200) -> Dict[str, Any]:
         """获取关键词云图数据
         
         Args:
             date_str: 日期字符串，格式为YYYY-MM-DD
             refresh: 是否强制刷新缓存
+            keyword_count: 返回的关键词数量，默认为200
         """
         if not date_str:
             date_str = datetime.now(self.shanghai_tz).strftime("%Y-%m-%d")
         
         # 缓存处理
-        cache_key = f"{self.cache_key_prefix}{date_str}:keyword_cloud"
+        cache_key = f"{self.cache_key_prefix}{date_str}:keyword_cloud:{keyword_count}"
         
         # 如果强制刷新或者没有缓存，则重新分析
         if refresh:
@@ -1499,15 +1525,15 @@ class TrendAnalyzer:
         # 使用过滤后的数据
         all_platform_data = filtered_data
         
-        # 提取关键词云数据
-        keyword_clouds = self._extract_keyword_clouds(all_platform_data)
+        # 提取关键词云数据 - 使用指定的关键词数量
+        keyword_clouds = self._extract_keyword_clouds(all_platform_data, keyword_count)
         
-        # 构造结果
+        # 构造结果 - 只包含指定的字段
         result = {
             "status": "success",
             "date": date_str,
-            "analysis_type": "keyword_cloud",
             "keyword_clouds": keyword_clouds,
+            "total_news_count": sum(len(items) for items in all_platform_data.values()),
             "updated_at": datetime.now(self.shanghai_tz).strftime("%Y-%m-%d %H:%M:%S")
         }
         

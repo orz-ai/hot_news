@@ -119,7 +119,7 @@ async def get_trend_prediction(date: Optional[str] = None):
         }
 
 @router.get("/keyword-cloud")
-async def get_keyword_cloud(date: Optional[str] = None, refresh: bool = False):
+async def get_keyword_cloud(date: Optional[str] = None, refresh: bool = False, platforms: Optional[str] = None, category: Optional[str] = None, keyword_count: int = 200):
     """
     获取关键词云图数据
     
@@ -127,11 +127,20 @@ async def get_keyword_cloud(date: Optional[str] = None, refresh: bool = False):
     
     - **date**: 可选，指定日期，格式为YYYY-MM-DD，默认为当天
     - **refresh**: 可选，是否强制刷新缓存，默认为False
+    - **platforms**: 可选，指定平台，多个平台用逗号分隔，如"baidu,weibo"
+    - **category**: 可选，指定分类，如"科技"、"娱乐"等
+    - **keyword_count**: 可选，返回的关键词数量，默认为200
     """
     try:
         analyzer = TrendAnalyzer()
         # 获取高级分析数据，但只返回关键词云部分
-        result = analyzer.get_keyword_cloud(date, refresh)
+        result = analyzer.get_keyword_cloud(date, refresh, keyword_count)
+        
+        # 确保直接返回完整的keyword_clouds数据
+        if result and result.get("status") == "success" and "keyword_clouds" in result:
+            # 不做任何过滤或限制，直接返回完整的keyword_clouds数据
+            pass
+        
         return result
     except Exception as e:
         log.error(f"Error in keyword cloud analysis: {e}")

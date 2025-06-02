@@ -3,8 +3,8 @@ beautifulsoup4==4.9.3
 SQLAlchemy==2.0.23
 pymysql==1.1.0
 apscheduler>=3.8.0
-fastapi>=0.68.0
-uvicorn>=0.15.0
+fastapi>=0.100.0
+uvicorn>=0.23.0
 schedule>=1.1.0
 redis>=3.7.0
 pytz>=2021.1
