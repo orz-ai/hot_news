@@ -7,6 +7,7 @@ import pytz
 from app.analysis.trend_analyzer import TrendAnalyzer
 from app.analysis.predictor import TrendPredictor
 from app.utils.logger import log
+from app.core import cache
 
 router = APIRouter()
 
@@ -21,6 +22,18 @@ async def get_trend_analysis(date: Optional[str] = None, type: str = "main"):
     - **type**: 分析类型，可选值为 main(主题分析), platform(平台对比), cross(跨平台热点), advanced(高级分析)，默认为main
     """
     try:
+        if not date:
+            date = datetime.now(pytz.timezone('Asia/Shanghai')).strftime("%Y-%m-%d")
+        
+        # 从缓存中获取数据
+        cache_key = f"analysis:trend:{date}:{type}"
+        cached_data = cache.get_cache(cache_key)
+        
+        if cached_data:
+            log.info(f"Retrieved trend analysis from cache for {date}, type: {type}")
+            return cached_data
+        
+        # 如果缓存中没有，则生成新的分析数据
         analyzer = TrendAnalyzer()
         result = analyzer.get_analysis(date, type)
         return result
@@ -42,6 +55,18 @@ async def get_platform_comparison(date: Optional[str] = None):
     - **date**: 可选，指定日期，格式为YYYY-MM-DD，默认为当天
     """
     try:
+        if not date:
+            date = datetime.now(pytz.timezone('Asia/Shanghai')).strftime("%Y-%m-%d")
+        
+        # 从缓存中获取数据
+        cache_key = f"analysis:trend:{date}:platform_comparison"
+        cached_data = cache.get_cache(cache_key)
+        
+        if cached_data:
+            log.info(f"Retrieved platform comparison from cache for {date}")
+            return cached_data
+        
+        # 如果缓存中没有，则生成新的分析数据
         analyzer = TrendAnalyzer()
         result = analyzer.get_platform_comparison(date)
         return result
@@ -64,6 +89,20 @@ async def get_cross_platform_analysis(date: Optional[str] = None, refresh: bool 
     - **refresh**: 可选，是否强制刷新缓存，默认为False
     """
     try:
+        if not date:
+            date = datetime.now(pytz.timezone('Asia/Shanghai')).strftime("%Y-%m-%d")
+        
+        # 从缓存中获取数据
+        cache_key = f"analysis:trend:{date}:cross_platform"
+        
+        # 如果不是强制刷新，尝试从缓存获取
+        if not refresh:
+            cached_data = cache.get_cache(cache_key)
+            if cached_data:
+                log.info(f"Retrieved cross platform analysis from cache for {date}")
+                return cached_data
+        
+        # 如果缓存中没有或需要刷新，则生成新的分析数据
         analyzer = TrendAnalyzer()
         result = analyzer.get_cross_platform_analysis(date, refresh)
         return result
@@ -86,6 +125,20 @@ async def get_advanced_analysis(date: Optional[str] = None, refresh: bool = Fals
     - **refresh**: 可选，是否强制刷新缓存，默认为False
     """
     try:
+        if not date:
+            date = datetime.now(pytz.timezone('Asia/Shanghai')).strftime("%Y-%m-%d")
+        
+        # 从缓存中获取数据
+        cache_key = f"analysis:trend:{date}:advanced_analysis"
+        
+        # 如果不是强制刷新，尝试从缓存获取
+        if not refresh:
+            cached_data = cache.get_cache(cache_key)
+            if cached_data:
+                log.info(f"Retrieved advanced analysis from cache for {date}")
+                return cached_data
+        
+        # 如果缓存中没有或需要刷新，则生成新的分析数据
         analyzer = TrendAnalyzer()
         result = analyzer.get_advanced_analysis(date, refresh)
         return result
@@ -107,6 +160,18 @@ async def get_trend_prediction(date: Optional[str] = None):
     - **date**: 可选，指定日期，格式为YYYY-MM-DD，默认为当天
     """
     try:
+        if not date:
+            date = datetime.now(pytz.timezone('Asia/Shanghai')).strftime("%Y-%m-%d")
+        
+        # 从缓存中获取数据
+        cache_key = f"analysis:prediction:{date}"
+        cached_data = cache.get_cache(cache_key)
+        
+        if cached_data:
+            log.info(f"Retrieved trend prediction from cache for {date}")
+            return cached_data
+        
+        # 如果缓存中没有，则生成新的预测数据
         predictor = TrendPredictor()
         result = predictor.get_prediction(date)
         return result
@@ -132,15 +197,28 @@ async def get_keyword_cloud(date: Optional[str] = None, refresh: bool = False, p
     - **keyword_count**: 可选，返回的关键词数量，默认为200
     """
     try:
+        if not date:
+            date = datetime.now(pytz.timezone('Asia/Shanghai')).strftime("%Y-%m-%d")
+        
+        # 从缓存中获取数据
+        cache_key = f"analysis:keyword_cloud:{date}"
+        
+        # 如果不是强制刷新，尝试从缓存获取
+        if not refresh:
+            cached_data = cache.get_cache(cache_key)
+            if cached_data:
+                log.info(f"Retrieved keyword cloud from cache for {date}")
+                # 如果指定了分类，过滤结果
+                if category and cached_data.get("status") == "success" and "keyword_clouds" in cached_data:
+                    if category in cached_data["keyword_clouds"]:
+                        filtered_data = cached_data.copy()
+                        filtered_data["keyword_clouds"] = {category: cached_data["keyword_clouds"][category]}
+                        return filtered_data
+                return cached_data
+        
+        # 如果缓存中没有或需要刷新，则生成新的关键词云数据
         analyzer = TrendAnalyzer()
-        # 获取高级分析数据，但只返回关键词云部分
         result = analyzer.get_keyword_cloud(date, refresh, keyword_count)
-        
-        # 确保直接返回完整的keyword_clouds数据
-        if result and result.get("status") == "success" and "keyword_clouds" in result:
-            # 不做任何过滤或限制，直接返回完整的keyword_clouds数据
-            pass
-        
         return result
     except Exception as e:
         log.error(f"Error in keyword cloud analysis: {e}")
@@ -162,11 +240,25 @@ async def get_data_visualization(date: Optional[str] = None, refresh: bool = Fal
     - **platforms**: 可选，指定要分析的平台，多个平台用逗号分隔，例如：baidu,weibo,douyin
     """
     try:
+        if not date:
+            date = datetime.now(pytz.timezone('Asia/Shanghai')).strftime("%Y-%m-%d")
+        
+        # 从缓存中获取数据
+        cache_key = f"analysis:data_visualization:{date}"
+        
+        # 如果不是强制刷新，尝试从缓存获取
+        if not refresh:
+            cached_data = cache.get_cache(cache_key)
+            if cached_data:
+                log.info(f"Retrieved data visualization from cache for {date}")
+                return cached_data
+        
         # 解析平台参数
         platform_list = None
         if platforms:
             platform_list = [p.strip() for p in platforms.split(",") if p.strip()]
             
+        # 如果缓存中没有或需要刷新，则生成新的可视化数据
         analyzer = TrendAnalyzer()
         result = analyzer.get_data_visualization(date, refresh, platform_list)
         return result
@@ -190,11 +282,25 @@ async def get_trend_forecast(date: Optional[str] = None, refresh: bool = False, 
     - **time_range**: 可选，预测时间范围，可选值为 24h(24小时), 7d(7天), 30d(30天)，默认为24h
     """
     try:
+        if not date:
+            date = datetime.now(pytz.timezone('Asia/Shanghai')).strftime("%Y-%m-%d")
+        
         # 验证时间范围参数
         valid_time_ranges = ["24h", "7d", "30d"]
         if time_range not in valid_time_ranges:
             time_range = "24h"  # 默认使用24小时
+        
+        # 从缓存中获取数据
+        cache_key = f"analysis:trend_forecast:{date}:{time_range}"
+        
+        # 如果不是强制刷新，尝试从缓存获取
+        if not refresh:
+            cached_data = cache.get_cache(cache_key)
+            if cached_data:
+                log.info(f"Retrieved trend forecast from cache for {date}, time_range: {time_range}")
+                return cached_data
             
+        # 如果缓存中没有或需要刷新，则生成新的趋势预测数据
         analyzer = TrendAnalyzer()
         result = analyzer.get_trend_forecast(date, refresh, time_range)
         return result

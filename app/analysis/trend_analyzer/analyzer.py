@@ -1490,7 +1490,7 @@ class TrendAnalyzer:
             date_str = datetime.now(self.shanghai_tz).strftime("%Y-%m-%d")
         
         # 缓存处理
-        cache_key = f"{self.cache_key_prefix}{date_str}:keyword_cloud:{keyword_count}"
+        cache_key = f"analysis:keyword_cloud:{date_str}"
         
         # 如果强制刷新或者没有缓存，则重新分析
         if refresh:
@@ -1498,42 +1498,31 @@ class TrendAnalyzer:
             cache.delete_cache(cache_key)
         else:
             # 尝试从缓存获取
-            cached_analysis = cache.get_cache(cache_key)
-            if cached_analysis:
+            cached_data = cache.get_cache(cache_key)
+            if cached_data:
                 log.info(f"Retrieved keyword cloud from cache for {date_str}")
-                return cached_analysis
+                return cached_data
         
         # 收集所有平台的热点数据
         all_platform_data = self._get_platform_data(date_str)
         
         if not all_platform_data:
-            log.warning(f"No data available for keyword cloud analysis on {date_str}")
+            log.warning(f"No data available for keyword cloud on {date_str}")
             return {
                 "status": "error",
-                "message": "暂无可用数据生成关键词云图",
+                "message": "暂无可用数据生成关键词云",
                 "date": date_str
             }
         
-        # 过滤掉不是列表的数据
-        filtered_data = {}
-        for platform, data in all_platform_data.items():
-            if isinstance(data, list):
-                filtered_data[platform] = data
-            else:
-                log.warning(f"Platform {platform} data is not a list, skipping")
-        
-        # 使用过滤后的数据
-        all_platform_data = filtered_data
-        
-        # 提取关键词云数据 - 使用指定的关键词数量
+        # 提取关键词云数据
         keyword_clouds = self._extract_keyword_clouds(all_platform_data, keyword_count)
         
-        # 构造结果 - 只包含指定的字段
+        # 构建结果
         result = {
             "status": "success",
+            "message": "关键词云数据生成成功",
             "date": date_str,
             "keyword_clouds": keyword_clouds,
-            "total_news_count": sum(len(items) for items in all_platform_data.values()),
             "updated_at": datetime.now(self.shanghai_tz).strftime("%Y-%m-%d %H:%M:%S")
         }
         
@@ -1548,14 +1537,13 @@ class TrendAnalyzer:
         Args:
             date_str: 日期字符串，格式为YYYY-MM-DD
             refresh: 是否强制刷新缓存
-            platforms: 要分析的平台列表，如果为None则分析所有平台
+            platforms: 指定要分析的平台列表
         """
         if not date_str:
             date_str = datetime.now(self.shanghai_tz).strftime("%Y-%m-%d")
         
-        # 构建缓存键，包含平台信息
-        platforms_key = "_".join(sorted(platforms)) if platforms else "all"
-        cache_key = f"{self.cache_key_prefix}{date_str}:data_visualization:{platforms_key}"
+        # 缓存处理
+        cache_key = f"analysis:data_visualization:{date_str}"
         
         # 如果强制刷新或者没有缓存，则重新分析
         if refresh:
@@ -1563,45 +1551,36 @@ class TrendAnalyzer:
             cache.delete_cache(cache_key)
         else:
             # 尝试从缓存获取
-            cached_analysis = cache.get_cache(cache_key)
-            if cached_analysis:
-                log.info(f"Retrieved data visualization from cache for {date_str}, platforms: {platforms_key}")
-                return cached_analysis
+            cached_data = cache.get_cache(cache_key)
+            if cached_data:
+                log.info(f"Retrieved data visualization from cache for {date_str}")
+                return cached_data
         
         # 收集所有平台的热点数据
         all_platform_data = self._get_platform_data(date_str)
+        
+        # 如果指定了平台，只保留指定平台的数据
+        if platforms:
+            all_platform_data = {k: v for k, v in all_platform_data.items() if k in platforms}
         
         if not all_platform_data:
             log.warning(f"No data available for data visualization on {date_str}")
             return {
                 "status": "error",
-                "message": "暂无可用数据进行数据可视化分析",
+                "message": "暂无可用数据进行可视化分析",
                 "date": date_str
             }
         
-        # 过滤掉不是列表的数据
-        filtered_data = {}
-        for platform, data in all_platform_data.items():
-            if isinstance(data, list):
-                # 如果指定了平台列表，只保留指定的平台
-                if platforms and platform not in platforms:
-                    continue
-                filtered_data[platform] = data
-            else:
-                log.warning(f"Platform {platform} data is not a list, skipping")
+        # 生成主题热度分布数据
+        topic_distribution = self._analyze_topic_heat_distribution(all_platform_data)
         
-        # 使用过滤后的数据
-        all_platform_data = filtered_data
-        
-        # 主题热度分布图数据
-        topic_heat_distribution = self._analyze_topic_heat_distribution(all_platform_data)
-        
-        # 构造结果
+        # 构建结果
         result = {
             "status": "success",
+            "message": "数据可视化分析完成",
             "date": date_str,
-            "analysis_type": "data_visualization",
-            "topic_heat_distribution": topic_heat_distribution,
+            "topic_heat_distribution": topic_distribution,
+            "platforms": list(all_platform_data.keys()),
             "updated_at": datetime.now(self.shanghai_tz).strftime("%Y-%m-%d %H:%M:%S")
         }
         
@@ -1609,9 +1588,9 @@ class TrendAnalyzer:
         cache.set_cache(cache_key, result, self.cache_expire)
         
         return result
-        
+
     def get_trend_forecast(self, date_str: Optional[str] = None, refresh: bool = False, time_range: str = "24h") -> Dict[str, Any]:
-        """获取热点趋势预测
+        """获取热点趋势预测分析
         
         Args:
             date_str: 日期字符串，格式为YYYY-MM-DD
@@ -1621,8 +1600,13 @@ class TrendAnalyzer:
         if not date_str:
             date_str = datetime.now(self.shanghai_tz).strftime("%Y-%m-%d")
         
+        # 验证时间范围参数
+        valid_time_ranges = ["24h", "7d", "30d"]
+        if time_range not in valid_time_ranges:
+            time_range = "24h"  # 默认使用24小时
+        
         # 缓存处理
-        cache_key = f"{self.cache_key_prefix}{date_str}:trend_forecast:{time_range}"
+        cache_key = f"analysis:trend_forecast:{date_str}:{time_range}"
         
         # 如果强制刷新或者没有缓存，则重新分析
         if refresh:
@@ -1630,10 +1614,10 @@ class TrendAnalyzer:
             cache.delete_cache(cache_key)
         else:
             # 尝试从缓存获取
-            cached_analysis = cache.get_cache(cache_key)
-            if cached_analysis:
+            cached_data = cache.get_cache(cache_key)
+            if cached_data:
                 log.info(f"Retrieved trend forecast from cache for {date_str}, time_range: {time_range}")
-                return cached_analysis
+                return cached_data
         
         # 收集所有平台的热点数据
         all_platform_data = self._get_platform_data(date_str)
@@ -1642,54 +1626,19 @@ class TrendAnalyzer:
             log.warning(f"No data available for trend forecast on {date_str}")
             return {
                 "status": "error",
-                "message": "暂无可用数据进行热点趋势预测",
-                "date": date_str,
-                "time_range": time_range
+                "message": "暂无可用数据进行趋势预测",
+                "date": date_str
             }
         
-        # 过滤掉不是列表的数据
-        filtered_data = {}
-        for platform, data in all_platform_data.items():
-            if isinstance(data, list):
-                filtered_data[platform] = data
-            else:
-                log.warning(f"Platform {platform} data is not a list, skipping")
-        
-        # 使用过滤后的数据
-        all_platform_data = filtered_data
-        
-        # 检查是否有足够的数据进行预测
-        total_items = sum(len(items) for items in all_platform_data.values())
-        if total_items < 50:  # 假设需要至少50条数据才能进行有效预测
-            return {
-                "status": "warning",
-                "message": "没有足够的数据进行趋势预测",
-                "date": date_str,
-                "time_range": time_range,
-                "has_enough_data": False,
-                "updated_at": datetime.now(self.shanghai_tz).strftime("%Y-%m-%d %H:%M:%S")
-            }
-        
-        # 根据时间范围生成描述文本
-        description_text = ""
-        if time_range == "24h":
-            description_text = f"基于当前热点数据和历史趋势，预测未来24小时内可能持续升温的热门话题。"
-        elif time_range == "7d":
-            description_text = f"基于当前热点数据和历史趋势，预测未来7天内可能持续升温的热门话题。"
-        elif time_range == "30d":
-            description_text = f"基于当前热点数据和历史趋势，预测未来30天内可能持续升温的热门话题。"
-        
-        # 热点演变趋势
+        # 分析热点趋势演变
         trend_evolution = self._analyze_trend_evolution(all_platform_data, date_str, time_range)
         
-        # 构造结果
+        # 构建结果
         result = {
             "status": "success",
+            "message": "热点趋势预测完成",
             "date": date_str,
-            "analysis_type": "trend_forecast",
             "time_range": time_range,
-            "description": description_text,
-            "has_enough_data": True,
             "trend_evolution": trend_evolution,
             "updated_at": datetime.now(self.shanghai_tz).strftime("%Y-%m-%d %H:%M:%S")
         }
