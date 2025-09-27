@@ -1,0 +1,19 @@
+{
+  "stopwords": [
+    "什么", "怎么", "如何", "为何", "为什么", "哪些", "多少", "几个", "怎样",
+    "一个", "这个", "那个", "自己", "这些", "那些", "因为", "所以", "如果", 
+    "可以", "还是", "这样", "那样", "关于", "对于",
+    "今天", "明天", "昨天", "今年", "去年", "最近", "现在",
+    "一些", "有些", "很多", "许多",
+    "a", "an", "the", "and", "or", "but", "if", "because", "as", "what", "when",
+    "where", "how", "to", "of", "for", "with", "in", "on", "at", "from", "by",
+    "about", "into", "is", "are", "was", "were", "be", "been", "being", "have",
+    "has", "had", "do", "does", "did", "doing", "can", "could", "will", "would",
+    "should", "shall", "may", "might", "must", "that", "which", "who", "whom",
+    "this", "these", "those", "am", "i", "you", "he", "she", "it", "we", "they",
+    "their", "your", "my", "his", "her", "its", "our", "than", "then", "so", "not",
+    "的", "了", "和", "是", "在", "我", "有", "个", "这", "那", "就", "也",
+    "要", "会", "对", "啊", "吧", "呢", "吗", "嗯", "哦", "哪", "啥", "么",
+    "被", "说", "到", "等", "着", "为", "与", "但", "并", "或", "而", "所以"
+  ]
+} 

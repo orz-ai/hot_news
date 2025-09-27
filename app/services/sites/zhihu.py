@@ -20,7 +20,7 @@ class ZhiHuCrawler(Crawler):
         # 获取当前时间
         current_time = datetime.datetime.now()
         
-        url = "https://www.zhihu.com/api/v3/feed/topstory/hot-lists/total?limit=50&desktop=true"
+        url = "https://www.zhihu.com/api/v3/explore/guest/feeds?limit=30&ws_qiangzhisafe=0"
         
         resp = requests.get(url=url, headers=self.header, verify=False, timeout=self.timeout)
         if resp.status_code != 200:
@@ -36,8 +36,10 @@ class ZhiHuCrawler(Crawler):
             
             for item in data:
                 target = item.get('target', {})
-                title = target.get('title', '')
-                url = f"https://www.zhihu.com/question/{target.get('id')}"
+                question = target.get('question', {})
+                title = question.get('title', '')
+                # url = f"https://www.zhihu.com/question/{target.get('id')}"
+                url = question.get('url', '')
                 excerpt = target.get('excerpt', '')
                 
                 news = {

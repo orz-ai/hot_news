@@ -76,6 +76,55 @@ def safe_fetch(crawler_name: str, crawler, date_str: str, is_retry: bool = False
         log.error(f"{'Second time ' if is_retry else ''}crawler {crawler_name} error: {traceback.format_exc()}")
         return []
 
+def run_data_analysis(date_str: str):
+    """执行数据分析并缓存结果"""
+    log.info(f"Starting data analysis for date {date_str}")
+    try:
+        # 导入分析模块（在这里导入避免循环依赖）
+        from app.analysis.trend_analyzer import TrendAnalyzer
+        from app.analysis.predictor import TrendPredictor
+        
+        # 创建分析器实例
+        analyzer = TrendAnalyzer()
+        predictor = TrendPredictor()
+        
+        # 1. 生成关键词云图数据并缓存
+        log.info("Generating keyword cloud data...")
+        analyzer.get_keyword_cloud(date_str, refresh=True)
+        
+        # 2. 生成热点聚合分析数据并缓存
+        log.info("Generating trend analysis data...")
+        analyzer.get_analysis(date_str, analysis_type="main")
+        
+        # 3. 生成跨平台热点分析数据并缓存
+        log.info("Generating cross-platform analysis data...")
+        analyzer.get_cross_platform_analysis(date_str, refresh=True)
+        
+        # 4. 生成热点趋势预测数据并缓存
+        log.info("Generating trend prediction data...")
+        predictor.get_prediction(date_str)
+        
+        # 5. 生成平台对比分析数据并缓存
+        log.info("Generating platform comparison data...")
+        analyzer.get_platform_comparison(date_str)
+        
+        # 6. 生成高级分析数据并缓存
+        log.info("Generating advanced analysis data...")
+        analyzer.get_advanced_analysis(date_str, refresh=True)
+        
+        # 7. 生成数据可视化分析数据并缓存
+        log.info("Generating data visualization analysis...")
+        analyzer.get_data_visualization(date_str, refresh=True)
+        
+        # 8. 生成趋势预测分析数据并缓存
+        log.info("Generating trend forecast data...")
+        analyzer.get_trend_forecast(date_str, refresh=True)
+        
+        log.info(f"All data analysis completed for date {date_str}")
+    except Exception as e:
+        log.error(f"Error during data analysis: {str(e)}")
+        log.error(traceback.format_exc())
+
 @_scheduler.scheduled_job('interval', id='crawlers_logic', seconds=CRAWLER_INTERVAL, 
                          max_instances=crawler_config.max_instances, 
                          misfire_grace_time=crawler_config.misfire_grace_time)
@@ -109,6 +158,11 @@ def crawlers_logic():
         duration = (end_time - now_time).total_seconds()
         log.info(f"Crawler job finished at {end_time.strftime('%Y-%m-%d %H:%M:%S')}, "
                  f"duration: {duration:.2f}s, success: {success_count}/{len(crawler_factory)}")
+        
+        # 爬取完成后执行数据分析
+        log.info("Crawler job completed, starting data analysis...")
+        # 使用新线程执行分析，避免阻塞主线程
+        threading.Thread(target=run_data_analysis, args=(date_str,), daemon=True).start()
         
         return success_count
     

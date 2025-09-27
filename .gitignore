@@ -4,3 +4,4 @@ venv
 merged_pwd_pool.txt
 wrong_pwds.txt
 logs
+config/config-prod.yaml
