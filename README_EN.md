@@ -1,8 +1,10 @@
 [中文](README.md)
 
+Frontend project: [Hot News](https://github.com/orz-ai/hot_news_front)
+
 # Daily Hot News API
 
-**Website:** https://news.orz.ai
+Live Demo: [Hot News](https://news.orz.ai/)
 
 ## Overview
 

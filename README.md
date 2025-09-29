@@ -1,8 +1,11 @@
 [English](README_EN.md)
 
+前端项目戳这里：[热点速览](https://github.com/orz-ai/hot_news_front)
+
 # 每日热点新闻 API
 
-**临时网站：** https://news.orz.ai
+线上地址：[热点速览](https://news.orz.ai/)
+
 
 ## 概述
 
