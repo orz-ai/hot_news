@@ -11,6 +11,7 @@ from app.services import crawler_factory, _scheduler
 from app.utils.logger import log
 from app.core import db, cache
 from app.core.config import get_crawler_config
+from app.utils.notification import notification_manager
 
 # 获取爬虫配置
 crawler_config = get_crawler_config()
@@ -73,7 +74,20 @@ def safe_fetch(crawler_name: str, crawler, date_str: str, is_retry: bool = False
             log.info(f"{'Second time ' if is_retry else ''}crawler {crawler_name} failed. 0 news fetched")
             return []
     except Exception as e:
-        log.error(f"{'Second time ' if is_retry else ''}crawler {crawler_name} error: {traceback.format_exc()}")
+        error_msg = traceback.format_exc()
+        log.error(f"{'Second time ' if is_retry else ''}crawler {crawler_name} error: {error_msg}")
+        
+        # 发送钉钉通知
+        try:
+            notification_manager.notify_crawler_error(
+                crawler_name=crawler_name,
+                error_msg=str(e),
+                date_str=date_str,
+                is_retry=is_retry
+            )
+        except Exception as notify_error:
+            log.error(f"Failed to send notification for crawler {crawler_name}: {notify_error}")
+        
         return []
 
 def run_data_analysis(date_str: str):
@@ -122,8 +136,18 @@ def run_data_analysis(date_str: str):
         
         log.info(f"All data analysis completed for date {date_str}")
     except Exception as e:
+        error_msg = traceback.format_exc()
         log.error(f"Error during data analysis: {str(e)}")
-        log.error(traceback.format_exc())
+        log.error(error_msg)
+        
+        # 发送数据分析异常通知
+        try:
+            notification_manager.notify_analysis_error(
+                error_msg=str(e),
+                date_str=date_str
+            )
+        except Exception as notify_error:
+            log.error(f"Failed to send analysis error notification: {notify_error}")
 
 @_scheduler.scheduled_job('interval', id='crawlers_logic', seconds=CRAWLER_INTERVAL, 
                          max_instances=crawler_config.max_instances, 
@@ -139,6 +163,7 @@ def crawlers_logic():
         
         retry_crawler = []
         success_count = 0
+        failed_crawlers = []
         
         for crawler_name, crawler in crawler_factory.items():
             news_list = safe_fetch(crawler_name, crawler, date_str)
@@ -146,18 +171,39 @@ def crawlers_logic():
                 success_count += 1
             else:
                 retry_crawler.append(crawler_name)
+                failed_crawlers.append(crawler_name)
         
         # 第二轮爬取（重试失败的爬虫）
         if retry_crawler:
             log.info(f"Retrying {len(retry_crawler)} failed crawlers")
+            retry_failed = []
             for crawler_name in retry_crawler:
-                safe_fetch(crawler_name, crawler_factory[crawler_name], date_str, is_retry=True)
+                news_list = safe_fetch(crawler_name, crawler_factory[crawler_name], date_str, is_retry=True)
+                if news_list:
+                    success_count += 1
+                    # 从失败列表中移除成功的爬虫
+                    if crawler_name in failed_crawlers:
+                        failed_crawlers.remove(crawler_name)
+                else:
+                    retry_failed.append(crawler_name)
         
         # 记录完成时间
         end_time = datetime.now(SHANGHAI_TZ)
         duration = (end_time - now_time).total_seconds()
         log.info(f"Crawler job finished at {end_time.strftime('%Y-%m-%d %H:%M:%S')}, "
                  f"duration: {duration:.2f}s, success: {success_count}/{len(crawler_factory)}")
+        
+        # 发送爬虫执行摘要通知（仅在有失败时发送）
+        try:
+            notification_manager.notify_crawler_summary(
+                success_count=success_count,
+                total_count=len(crawler_factory),
+                failed_crawlers=failed_crawlers,
+                duration=duration,
+                date_str=date_str
+            )
+        except Exception as notify_error:
+            log.error(f"Failed to send crawler summary notification: {notify_error}")
         
         # 爬取完成后执行数据分析
         log.info("Crawler job completed, starting data analysis...")
@@ -168,8 +214,27 @@ def crawlers_logic():
     
     try:
         return crawler_work()
-    except CrawlerTimeoutError:
-        log.error("Crawler job timed out and was terminated")
+    except CrawlerTimeoutError as e:
+        log.error(f"Crawler job timeout: {str(e)}")
+        # 发送超时通知
+        try:
+            notification_manager.notify_crawler_timeout(
+                timeout_seconds=CRAWLER_TIMEOUT,
+                date_str=date_str
+            )
+        except Exception as notify_error:
+            log.error(f"Failed to send timeout notification: {notify_error}")
+        return 0
     except Exception as e:
-        log.error(f"Crawler job failed with error: {str(e)}")
+        log.error(f"Crawler job error: {str(e)}")
         log.error(traceback.format_exc())
+        # 发送通用异常通知
+        try:
+            notification_manager.notify_crawler_error(
+                crawler_name="crawler_job",
+                error_msg=str(e),
+                date_str=date_str
+            )
+        except Exception as notify_error:
+            log.error(f"Failed to send error notification: {notify_error}")
+        return 0

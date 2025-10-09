@@ -6,7 +6,6 @@ from pydantic import BaseModel, Field
 # 配置文件路径
 CONFIG_PATH = os.environ.get("CONFIG_PATH", "config/config.yaml")
 
-# 配置模型
 class AppConfig(BaseModel):
     title: str
     description: str
@@ -59,6 +58,12 @@ class SchedulerConfig(BaseModel):
     misfire_grace_time: int
     timezone: str
 
+class NotificationConfig(BaseModel):
+    dingtalk: Dict[str, Any] = Field(default_factory=dict)
+    # 可以添加其他通知方式的配置
+    # wechat: Dict[str, Any] = Field(default_factory=dict)
+    # email: Dict[str, Any] = Field(default_factory=dict)
+
 class Config(BaseModel):
     app: AppConfig
     database: DatabaseConfig
@@ -66,6 +71,7 @@ class Config(BaseModel):
     crawler: CrawlerConfig
     logging: LoggingConfig
     scheduler: SchedulerConfig
+    notification: Optional[NotificationConfig] = None
 
 # 全局配置对象
 _config: Optional[Config] = None
@@ -106,3 +112,10 @@ def get_logging_config() -> LoggingConfig:
 
 def get_scheduler_config() -> SchedulerConfig:
     return get_config().scheduler
+
+def get_notification_config() -> Dict[str, Any]:
+    """获取通知配置"""
+    config = get_config()
+    if config.notification:
+        return config.notification.dict()
+    return {}

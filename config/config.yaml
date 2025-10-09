@@ -48,6 +48,13 @@ logging:
   daily_backup_count: 30
   timezone: "Asia/Shanghai"
 
+notification:
+  dingtalk:
+    enabled: false
+    webhook_url: ""
+    secret: ""
+    timeout: 10
+
 
 scheduler:
   thread_pool_size: 20
@@ -55,4 +62,4 @@ scheduler:
   coalesce: true
   max_instances: 2
   misfire_grace_time: 300
-  timezone: "Asia/Shanghai" 
+  timezone: "Asia/Shanghai"
