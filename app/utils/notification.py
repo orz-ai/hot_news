@@ -22,6 +22,7 @@ class DingTalkNotifier:
         self.secret = self.config.get('dingtalk', {}).get('secret', '')
         self.enabled = self.config.get('dingtalk', {}).get('enabled', False)
         self.timeout = self.config.get('dingtalk', {}).get('timeout', 10)
+        self.notify_success = self.config.get('dingtalk', {}).get('notify_success', False)
         self.shanghai_tz = pytz.timezone('Asia/Shanghai')
         
         if not self.webhook_url and self.enabled:
@@ -142,9 +143,10 @@ class DingTalkNotifier:
 请及时检查爬虫状态！
         """.strip()
         
-        return self.send_markdown_message(title, content)
+        # 异常时@所有人
+        return self.send_markdown_message(title, content, at_all=True)
     
-    def send_crawler_timeout(self, timeout_seconds: int) -> bool:
+    def send_crawler_timeout(self, timeout_seconds: int, date_str: str) -> bool:
         """发送爬虫超时通知"""
         current_time = datetime.now(self.shanghai_tz).strftime("%Y-%m-%d %H:%M:%S")
         
@@ -153,29 +155,37 @@ class DingTalkNotifier:
 ## {title}
 
 **时间**: {current_time}\n
+**日期**: {date_str}\n
 **超时时长**: {timeout_seconds}秒\n
 **状态**: 爬虫任务执行超时被强制终止
 
 请检查爬虫性能或调整超时配置！
         """.strip()
         
-        return self.send_markdown_message(title, content)
+        # 超时异常时@所有人
+        return self.send_markdown_message(title, content, at_all=True)
     
     def send_crawler_summary(self, success_count: int, total_count: int, 
                            failed_crawlers: List[str], duration: float, 
                            date_str: str) -> bool:
-        """发送爬虫执行摘要通知（仅在有失败时发送）"""
-        if success_count == total_count:
-            # 全部成功，不发送通知
+        """发送爬虫执行摘要通知"""
+        # 全部成功且未启用正常通知时，不发送
+        if success_count == total_count and not self.notify_success:
             return True
-        
+            
         current_time = datetime.now(self.shanghai_tz).strftime("%Y-%m-%d %H:%M:%S")
         
         # 构建失败爬虫列表
-        failed_list = "\n".join([f"- {name}" for name in failed_crawlers])
+        failed_list = "\n".join([f"- {name}" for name in failed_crawlers]) if failed_crawlers else ""
         
-        title = f"📊 爬虫执行摘要 - {date_str}"
-        content = f"""
+        if failed_crawlers:
+            title = f"🚨 爬虫执行摘要 - {date_str}"
+        else:
+            title = f"📊 爬虫执行摘要 - {date_str}"
+        
+        # 根据是否有失败构建不同的内容
+        if failed_crawlers:
+            content = f"""
 ## {title}
 
 **时间**: {current_time}\n
@@ -188,9 +198,23 @@ class DingTalkNotifier:
 {failed_list}
 
 请关注失败的爬虫状态！
-        """.strip()
+            """.strip()
+        else:
+            content = f"""
+## {title}
+
+**时间**: {current_time}\n
+**日期**: {date_str}\n
+**执行时长**: {duration:.2f}秒\n
+**成功**: {success_count}/{total_count}\n
+**失败**: {len(failed_crawlers)}
+
+所有爬虫执行成功！
+            """.strip()
         
-        return self.send_markdown_message(title, content)
+        # 有失败时@所有人，没失败时不@
+        at_all = len(failed_crawlers) > 0
+        return self.send_markdown_message(title, content, at_all=at_all)
     
     def send_analysis_error(self, error_msg: str, date_str: str) -> bool:
         """发送数据分析错误通知"""
@@ -210,9 +234,9 @@ class DingTalkNotifier:
 数据分析任务执行失败，请检查分析模块！
         """.strip()
         
-        return self.send_markdown_message(title, content)
-
-
+        # 分析异常时@所有人
+        return self.send_markdown_message(title, content, at_all=True)
+    
 class NotificationManager:
     """通知管理器，支持多种通知方式"""
     
@@ -220,14 +244,31 @@ class NotificationManager:
         self.dingtalk = DingTalkNotifier()
         # 可以在这里添加其他通知方式，如企业微信、邮件等
     
+    def is_enabled(self) -> bool:
+        """检查通知是否启用"""
+        return self.dingtalk.enabled
+    
+    @property
+    def webhook_url(self) -> str:
+        """获取webhook URL"""
+        return self.dingtalk.webhook_url
+    
+    def send_text(self, content: str, at_all: bool = False) -> bool:
+        """发送文本消息"""
+        return self.dingtalk.send_text_message(content, at_all=at_all)
+    
+    def send_markdown(self, title: str, text: str, at_all: bool = False) -> bool:
+        """发送Markdown消息"""
+        return self.dingtalk.send_markdown_message(title, text, at_all=at_all)
+    
     def notify_crawler_error(self, crawler_name: str, error_msg: str, 
                            date_str: str, is_retry: bool = False):
         """通知爬虫错误"""
         self.dingtalk.send_crawler_error(crawler_name, error_msg, date_str, is_retry)
     
-    def notify_crawler_timeout(self, timeout_seconds: int):
+    def notify_crawler_timeout(self, timeout_seconds: int, date_str: str):
         """通知爬虫超时"""
-        self.dingtalk.send_crawler_timeout(timeout_seconds)
+        self.dingtalk.send_crawler_timeout(timeout_seconds, date_str)
     
     def notify_crawler_summary(self, success_count: int, total_count: int, 
                              failed_crawlers: List[str], duration: float, 

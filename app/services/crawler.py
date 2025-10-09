@@ -193,7 +193,7 @@ def crawlers_logic():
         log.info(f"Crawler job finished at {end_time.strftime('%Y-%m-%d %H:%M:%S')}, "
                  f"duration: {duration:.2f}s, success: {success_count}/{len(crawler_factory)}")
         
-        # 发送爬虫执行摘要通知（仅在有失败时发送）
+        # 发送通知
         try:
             notification_manager.notify_crawler_summary(
                 success_count=success_count,
@@ -203,7 +203,7 @@ def crawlers_logic():
                 date_str=date_str
             )
         except Exception as notify_error:
-            log.error(f"Failed to send crawler summary notification: {notify_error}")
+            log.error(f"Failed to send crawler notification: {notify_error}")
         
         # 爬取完成后执行数据分析
         log.info("Crawler job completed, starting data analysis...")

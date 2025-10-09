@@ -54,6 +54,7 @@ notification:
     webhook_url: ""
     secret: ""
     timeout: 10
+    notify_success: false
 
 
 scheduler:
