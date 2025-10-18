@@ -18,25 +18,25 @@ The Daily Hot News API provides access to real-time hot news data from various p
 
 We currently support trending content from the following platforms:
 
-| Platform Code | Platform Name | Content Type | Update Frequency |
-|---------------|---------------|--------------|------------------|
-| baidu | Baidu Hot Search | Social trends, entertainment, events | 30 minutes |
-| shaoshupai | Sspai | Tech, digital, lifestyle | 30 minutes |
-| weibo | Weibo Hot Search | Social media trends, entertainment, events | 30 minutes |
-| zhihu | Zhihu Hot List | Q&A, in-depth content, social topics | 30 minutes |
-| 36kr | 36Kr | Tech startups, business news | 30 minutes |
-| 52pojie | 52Pojie Forum | Technology, software, security | 30 minutes |
-| bilibili | Bilibili | Videos, anime, gaming, lifestyle | 30 minutes |
-| douban | Douban | Books, movies, music, culture | 30 minutes |
-| hupu | Hupu | Sports, gaming, digital | 30 minutes |
-| tieba | Baidu Tieba | Interest communities, topic discussions | 30 minutes |
-| juejin | Juejin | Programming, technical articles | 30 minutes |
-| douyin | TikTok/Douyin | Short video trends, entertainment | 30 minutes |
-| v2ex | V2EX | Technology, programming, creativity | 30 minutes |
-| jinritoutiao | Toutiao | News, trending events | 30 minutes |
-| stackoverflow | Stack Overflow | Programming Q&A, technical discussions | 30 minutes |
-| github | GitHub Trending | Open source projects, programming languages | 30 minutes |
-| hackernews | Hacker News | Tech news, startups, programming | 30 minutes |
+| Platform Code | Platform Name    | Content Type                                | Status |
+| ------------- | ---------------- | ------------------------------------------- | ------ |
+| baidu         | Baidu Hot Search | Social trends, entertainment, events        | ✅      |
+| shaoshupai    | Sspai            | Tech, digital, lifestyle                    | ✅      |
+| weibo         | Weibo Hot Search | Social media trends, entertainment, events  | ✅      |
+| zhihu         | Zhihu Hot List   | Q&A, in-depth content, social topics        | ✅      |
+| 36kr          | 36Kr             | Tech startups, business news                | ✅      |
+| 52pojie       | 52Pojie Forum    | Technology, software, security              | ✅      |
+| bilibili      | Bilibili         | Videos, anime, gaming, lifestyle            | ✅      |
+| douban        | Douban           | Books, movies, music, culture               | ✅      |
+| hupu          | Hupu             | Sports, gaming, digital                     | ✅      |
+| tieba         | Baidu Tieba      | Interest communities, topic discussions     | ✅      |
+| juejin        | Juejin           | Programming, technical articles             | ✅      |
+| douyin        | TikTok/Douyin    | Short video trends, entertainment           | ✅      |
+| v2ex          | V2EX             | Technology, programming, creativity         | ✅      |
+| jinritoutiao  | Toutiao          | News, trending events                       | ✅      |
+| stackoverflow | Stack Overflow   | Programming Q&A, technical discussions      | ✅      |
+| github        | GitHub Trending  | Open source projects, programming languages | ✅      |
+| hackernews    | Hacker News      | Tech news, startups, programming            | ✅      |
 
 ## Usage
 
