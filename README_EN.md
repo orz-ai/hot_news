@@ -20,30 +20,31 @@ The Daily Hot News API provides access to real-time hot news data from various p
 
 We currently support trending content from the following platforms:
 
-| Serial No. | Platform Code | Platform Name    | Content Type                                | Status |
-| ---------- | ------------- | ---------------- | ------------------------------------------- | ------ |
-| 1          | baidu         | Baidu Hot Search | Social trends, entertainment, events        | ✅      |
-| 2          | sspai         | Sspai            | Tech, digital, lifestyle                    | ✅      |
-| 3          | weibo         | Weibo Hot Search | Social media trends, entertainment, events  | ✅      |
-| 4          | zhihu         | Zhihu Hot List   | Q&A, in-depth content, social topics        | ✅      |
-| 5          | tskr          | 36Kr             | Tech startups, business news                | ✅      |
-| 6          | ftpojie       | 52Pojie Forum    | Technology, software, security              | ✅      |
-| 7          | bilibili      | Bilibili         | Videos, anime, gaming, lifestyle            | ✅      |
-| 8          | douban        | Douban           | Books, movies, music, culture               | ✅      |
-| 9          | hupu          | Hupu             | Sports, gaming, digital                     | ✅      |
-| 10         | tieba         | Baidu Tieba      | Interest communities, topic discussions     | ✅      |
-| 11         | juejin        | Juejin           | Programming, technical articles             | ✅      |
-| 12         | douyin        | TikTok/Douyin    | Short video trends, entertainment           | ✅      |
-| 13         | vtex          | V2EX             | Technology, programming, creativity         | ✅      |
-| 14         | jinritoutiao  | Toutiao          | News, trending events                       | ✅      |
-| 15         | stackoverflow | Stack Overflow   | Programming Q&A, technical discussions      | ✅      |
-| 16         | github        | GitHub Trending  | Open source projects, programming languages | ✅      |
-| 17         | hackernews    | Hacker News      | Tech news, startups, programming            | ✅      |
-| 18         | sina_finance  | Sina Finance     | Financial news, stock market information    | ✅      |
-| 19         | eastmoney     | East Money       | Financial information, investment advice    | ✅      |
-| 20         | xueqiu        | Xueqiu           | Stock investment, financial community       | ✅      |
-| 21         | cls           | Cailianpress     | Financial news, market updates              | ✅      |
-| 22         | tenxunwang    | Tencent News     | General news, entertainment, technology     | ✅      |
+| Serial No. | Platform Name    | Platform Code | Content Type                                | Status |
+| ---------- | ---------------- | ------------- | ------------------------------------------- | ------ |
+| 1          | Baidu Hot Search | baidu         | Social trends, entertainment, events        | ✅      |
+| 2          | Sspai            | sspai         | Tech, digital, lifestyle                    | ✅      |
+| 3          | Weibo Hot Search | weibo         | Social media trends, entertainment, events  | ✅      |
+| 4          | Zhihu Hot List   | zhihu         | Q&A, in-depth content, social topics        | ✅      |
+| 5          | 36Kr             | tskr          | Tech startups, business news                | ✅      |
+| 6          | 52Pojie Forum    | ftpojie       | Technology, software, security              | ✅      |
+| 7          | Bilibili         | bilibili      | Videos, anime, gaming, lifestyle            | ✅      |
+| 8          | Douban           | douban        | Books, movies, music, culture               | ✅      |
+| 9          | Hupu             | hupu          | Sports, gaming, digital                     | ✅      |
+| 10         | Baidu Tieba      | tieba         | Interest communities, topic discussions     | ✅      |
+| 11         | Juejin           | juejin        | Programming, technical articles             | ✅      |
+| 12         | TikTok/Douyin    | douyin        | Short video trends, entertainment           | ✅      |
+| 13         | V2EX             | vtex          | Technology, programming, creativity         | ✅      |
+| 14         | Toutiao          | jinritoutiao  | News, trending events                       | ✅      |
+| 15         | Stack Overflow   | stackoverflow | Programming Q&A, technical discussions      | ✅      |
+| 16         | GitHub Trending  | github        | Open source projects, programming languages | ✅      |
+| 17         | Hacker News      | hackernews    | Tech news, startups, programming            | ✅      |
+| 18         | Sina Finance     | sina_finance  | Financial news, stock market information    | ✅      |
+| 19         | East Money       | eastmoney     | Financial information, investment advice    | ✅      |
+| 20         | Xueqiu           | xueqiu        | Stock investment, financial community       | ✅      |
+| 21         | Cailianpress     | cls           | Financial news, market updates              | ✅      |
+| 22         | Tencent News     | tenxunwang    | General news, entertainment, technology     | ✅      |
+| 23         | WeChat           | weixin        | Social, information                         | ✅      |
 
 ## Usage
 
