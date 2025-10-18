@@ -1,6 +1,9 @@
 [English](README_EN.md)
 
-
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/orz-ai/hot_news/actions)
+[![Web Scraping](https://img.shields.io/badge/Web%20Scraping-enabled-green.svg)](https://github.com/orz-ai/hot_news/)
+[![REST API](https://img.shields.io/badge/REST%20API-available-orange.svg)](https://news.orz.ai/docs)
 
 # 每日热点新闻 API
 
