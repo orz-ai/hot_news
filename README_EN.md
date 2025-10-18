@@ -38,6 +38,10 @@ We currently support trending content from the following platforms:
 | stackoverflow | Stack Overflow   | Programming Q&A, technical discussions      | ✅      |
 | github        | GitHub Trending  | Open source projects, programming languages | ✅      |
 | hackernews    | Hacker News      | Tech news, startups, programming            | ✅      |
+| sina_finance  | Sina Finance     | Financial news, stock market information    | ✅      |
+| eastmoney     | East Money       | Financial information, investment advice    | ✅      |
+| xueqiu        | Xueqiu           | Stock investment, financial community       | ✅      |
+| cls           | Cailianpress     | Financial news, market updates              | ✅      |
 
 ## Usage
 

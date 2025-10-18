@@ -36,6 +36,10 @@
 | stackoverflow | Stack Overflow  | 编程问答、技术讨论       | ✅    |
 | github        | GitHub Trending | 开源项目、编程语言       | ✅    |
 | hackernews    | Hacker News     | 科技新闻、创业、编程     | ✅    |
+| sina_finance  | 新浪财经        | 财经新闻、股市资讯       | ✅    |
+| eastmoney     | 东方财富        | 财经资讯、投资理财       | ✅    |
+| xueqiu        | 雪球            | 股票投资、财经社区       | ✅    |
+| cls           | 财联社          | 财经快讯、市场动态       | ✅    |
 
 ## 使用方法
 

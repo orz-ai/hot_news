@@ -1,15 +1,11 @@
 import json
 import re
-import datetime  # 添加datetime导入
+import datetime
 
 import requests
 import urllib3
 from bs4 import BeautifulSoup
-# 移除 SQLAlchemy 导入
-# from sqlalchemy.sql.functions import now
-
 from ...core import cache
-from ...db.mysql import News
 from .crawler import Crawler
 
 urllib3.disable_warnings()
@@ -18,7 +14,6 @@ urllib3.disable_warnings()
 class DouBanCrawler(Crawler):
 
     def fetch(self, date_str):
-        # 获取当前时间
         current_time = datetime.datetime.now()
         
         url = "https://www.douban.com/group/explore"
@@ -45,7 +40,6 @@ class DouBanCrawler(Crawler):
         html_text = resp.text
         soup = BeautifulSoup(html_text, "html.parser")
         
-        # 找到热门话题列表
         topic_list = soup.find_all('div', class_='channel-item')
         
         result = []
@@ -63,7 +57,6 @@ class DouBanCrawler(Crawler):
             title = link_elem.text.strip()
             url = link_elem.get('href')
             
-            # 获取话题描述
             desc_elem = topic.find('div', class_='content')
             desc = desc_elem.text.strip() if desc_elem else ""
             

@@ -20,6 +20,10 @@ from .vtex import VtexCrawler
 from .weibo import WeiboCrawler
 from .weixin import WeiXinCrawler
 from .zhihu import ZhiHuCrawler
+from .sina_finance import SinaFinanceCrawler
+from .eastmoney import EastMoneyCrawler
+from .xueqiu import XueqiuCrawler
+from .cls import CLSCrawler
 
 
 class CrawlerRegister:
@@ -49,6 +53,10 @@ class CrawlerRegister:
             "stackoverflow": StackOverflowCrawler(),
             "github": GithubCrawler(),
             "hackernews": HackerNewsCrawler(),
+            "sina_finance": SinaFinanceCrawler(),
+            "eastmoney": EastMoneyCrawler(),
+            "xueqiu": XueqiuCrawler(),
+            "cls": CLSCrawler(),
         }
         
         self.crawlers = crawler_map
