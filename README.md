@@ -5,7 +5,7 @@
 # 每日热点新闻 API
 
 - 线上地址：[热点速览](https://news.orz.ai/)
-- 前端项目戳这里：[热点速览](https://github.com/orz-ai/hot_news_front)
+- 前端项目戳这里：[热点速览 - 前端项目](https://github.com/orz-ai/hot_news_front)
 
 ## 概述
 

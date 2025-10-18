@@ -5,8 +5,7 @@
 # Daily Hot News API
 
 - Live Demo: [Hot News](https://news.orz.ai/)
-
-- Frontend project: [Hot News](https://github.com/orz-ai/hot_news_front)
+- Frontend project: [Hot News - Frontend](https://github.com/orz-ai/hot_news_front)
 
 ## Overview
 
