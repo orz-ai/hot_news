@@ -27,8 +27,6 @@ from .cls import CLSCrawler
 
 
 class CrawlerRegister:
-    """爬虫注册器"""
-    
     def __init__(self):
         self.crawlers = {}
     

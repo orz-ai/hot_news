@@ -47,7 +47,7 @@ class BaiduNewsCrawler(Crawler):
             result.append(news)
             cache_list.append(news)  # 直接添加字典，json.dumps会在后面处理整个列表
 
-        cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+        cache.hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
 
     def crawler_name(self):

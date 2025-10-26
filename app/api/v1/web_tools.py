@@ -26,7 +26,7 @@ def get_meta(url: str = None):
         }
 
     # get from cache
-    cached_metadata = cache._get(url)
+    cached_metadata = cache.get(url)
     if cached_metadata:
         return {
             "status": "200",
@@ -127,7 +127,7 @@ def get_meta(url: str = None):
         "favicon_url": favicon_url
     }
 
-    cache._set(url, json.dumps(metadata, ensure_ascii=False), ex=60)
+    cache.set(url, json.dumps(metadata, ensure_ascii=False), ex=60)
     result = {
         "status": "200",
         "data": metadata,

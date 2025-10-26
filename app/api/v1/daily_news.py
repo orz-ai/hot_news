@@ -26,7 +26,7 @@ def get_hot_news(date: str = None, platform: str = None):
         date = datetime.now(pytz.timezone('Asia/Shanghai')).strftime("%Y-%m-%d")
 
     cacheKey = f"crawler:{platform}:{date}"
-    result = cache._get(cacheKey)
+    result = cache.get(cacheKey)
     if result:
         return {
             "status": "200",
@@ -59,7 +59,7 @@ def get_all_platforms_news(date: str = None):
     
     for platform in crawler_factory.keys():
         cacheKey = f"crawler:{platform}:{date}"
-        result = cache._get(cacheKey)
+        result = cache.get(cacheKey)
         if result:
             try:
                 all_news[platform] = json.loads(result)
@@ -114,7 +114,7 @@ def get_multi_platforms_news(date: str = None, platforms: str = None):
     
     for platform in platform_list:
         cacheKey = f"crawler:{platform}:{date}"
-        result = cache._get(cacheKey)
+        result = cache.get(cacheKey)
         if result:
             try:
                 multi_news[platform] = json.loads(result)
@@ -170,7 +170,7 @@ def search_news(keyword: str, date: str = None, platforms: str = None, limit: in
     
     for platform in platform_list:
         cacheKey = f"crawler:{platform}:{date}"
-        result = cache._get(cacheKey)
+        result = cache.get(cacheKey)
         if not result:
             continue
         

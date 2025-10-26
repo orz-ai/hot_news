@@ -14,8 +14,8 @@ urllib3.disable_warnings()
 
 
 class ShaoShuPaiCrawler(Crawler):
+    """少数派"""
     def fetch(self, date_str):
-        # 获取当前时间
         current_time = datetime.datetime.now()
         
         url = "https://sspai.com/api/v1/article/index/page/get?limit=20&offset=0&created_at=0"
@@ -49,7 +49,7 @@ class ShaoShuPaiCrawler(Crawler):
                 result.append(news)
                 cache_list.append(news)
                 
-            cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+            cache.hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
             return result
             
         except Exception as e:

@@ -15,6 +15,7 @@ urllib3.disable_warnings()
 
 
 class JueJinCrawler(Crawler):
+    """掘金"""
 
     def fetch(self, date_str):
         # 获取当前时间
@@ -51,7 +52,7 @@ class JueJinCrawler(Crawler):
                 result.append(news)
                 cache_list.append(news)
                 
-            cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+            cache.hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
             return result
             
         except Exception as e:

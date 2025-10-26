@@ -86,7 +86,7 @@ def clear_cache_pattern(pattern: str) -> int:
         return 0
 
 
-def _get(key):
+def get(key):
     try:
         redis_client = get_redis_client()
     except Exception as e:
@@ -100,7 +100,7 @@ def _get(key):
     return value.decode("utf-8")
 
 
-def _set(key, value, ex=None):
+def set(key, value, ex=None):
     try:
         redis_client = get_redis_client()
     except Exception as e:
@@ -110,7 +110,7 @@ def _set(key, value, ex=None):
     return redis_client.set(key, value, ex=ex)
 
 
-def _del(key):
+def delete(key):
 
     try:
         redis_client = get_redis_client()
@@ -121,7 +121,7 @@ def _del(key):
     return redis_client.delete(key)
 
 
-def _hset(name, key, value):
+def hset(name, key, value):
 
     try:
         redis_client = get_redis_client()
@@ -132,7 +132,7 @@ def _hset(name, key, value):
     return redis_client.hset(name, key, value)
 
 
-def _hget(name, key):
+def hget(name, key):
 
     try:
         redis_client = get_redis_client()

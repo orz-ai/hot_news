@@ -59,7 +59,7 @@ class DouYinCrawler(Crawler):
             
             # 缓存并返回
             if cache_list:
-                cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+                cache.hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
             return result
             
         except Exception as e:
@@ -103,7 +103,7 @@ class DouYinCrawler(Crawler):
             result.append(news)
             cache_list.append(news)
 
-        cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+        cache.hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
 
 

@@ -15,6 +15,7 @@ urllib3.disable_warnings()
 
 
 class ZhiHuCrawler(Crawler):
+    """知乎"""
 
     def fetch(self, date_str):
         # 获取当前时间
@@ -38,8 +39,7 @@ class ZhiHuCrawler(Crawler):
                 target = item.get('target', {})
                 question = target.get('question', {})
                 title = question.get('title', '')
-                # url = f"https://www.zhihu.com/question/{target.get('id')}"
-                url = question.get('url', '')
+                url = f"https://www.zhihu.com/question/{question.get('id')}"
                 excerpt = target.get('excerpt', '')
                 
                 news = {
@@ -53,7 +53,7 @@ class ZhiHuCrawler(Crawler):
                 result.append(news)
                 cache_list.append(news)
                 
-            cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+            cache.hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
             return result
             
         except Exception as e:

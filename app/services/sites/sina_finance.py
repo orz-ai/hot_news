@@ -9,6 +9,7 @@ urllib3.disable_warnings()
 
 
 class SinaFinanceCrawler(Crawler):
+    """新浪财经"""
     def fetch(self, date_str):
         current_time = datetime.datetime.now()
         
@@ -65,7 +66,7 @@ class SinaFinanceCrawler(Crawler):
                     continue
             
             if cache_list:
-                cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+                cache.hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
             return result
         except Exception as e:
             return []

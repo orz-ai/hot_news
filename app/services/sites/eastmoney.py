@@ -10,6 +10,8 @@ urllib3.disable_warnings()
 
 
 class EastMoneyCrawler(Crawler):
+    """东方财富网"""
+
     def fetch(self, date_str) -> list:
         current_time = datetime.datetime.now()
 
@@ -77,7 +79,7 @@ class EastMoneyCrawler(Crawler):
                     continue
             
             if cache_list:
-                cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+                cache.hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
             return result
             
         except Exception as e:

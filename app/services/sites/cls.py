@@ -91,7 +91,7 @@ class CLSCrawler(Crawler):
                     continue
             
             if cache_list:
-                cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+                cache.hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
             return result
         except Exception as e:
             return []

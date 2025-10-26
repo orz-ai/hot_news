@@ -2,8 +2,6 @@ from abc import ABC, abstractmethod
 from typing import List, Dict, Any
 
 class Crawler(ABC):
-    """爬虫基类"""
-    
     def __init__(self):
         self.header = {
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,"

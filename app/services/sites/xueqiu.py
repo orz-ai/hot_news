@@ -12,6 +12,7 @@ urllib3.disable_warnings()
 
 
 class XueqiuCrawler(Crawler):
+    """雪球"""
     def __init__(self):
         super().__init__()
         self.session = Session()
@@ -143,7 +144,7 @@ class XueqiuCrawler(Crawler):
                     print(f"解析雪球新闻项失败: {e}")
                     continue
 
-            cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+            cache.hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
             return result
             
         except Exception as e:

@@ -14,6 +14,7 @@ from ...db.mysql import News
 urllib3.disable_warnings()
 
 class TsKrCrawler(Crawler):
+    """36氪"""
     def fetch(self, date_str):
         # 获取当前时间
         current_time = datetime.datetime.now()
@@ -59,7 +60,7 @@ class TsKrCrawler(Crawler):
             result.append(news)
             cache_list.append(news)
             
-        cache._hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
+        cache.hset(date_str, self.crawler_name(), json.dumps(cache_list, ensure_ascii=False))
         return result
         
     def crawler_name(self):

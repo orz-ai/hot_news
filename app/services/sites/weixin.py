@@ -33,14 +33,14 @@ class WeiXinCrawler(Crawler):
             
             if result and len(result) > 0:
                 # 缓存数据
-                cache._hset(date_str, self.crawler_name(), json.dumps(result, ensure_ascii=False))
+                cache.hset(date_str, self.crawler_name(), json.dumps(result, ensure_ascii=False))
                 return result
                 
             # 如果看一看失败，尝试从微信读书获取热门书评
             result = self._fetch_from_weixin_dushu(browser_manager)
             if result and len(result) > 0:
                 # 缓存数据
-                cache._hset(date_str, self.crawler_name(), json.dumps(result, ensure_ascii=False))
+                cache.hset(date_str, self.crawler_name(), json.dumps(result, ensure_ascii=False))
                 return result
                 
         except Exception as e:

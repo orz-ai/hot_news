@@ -17,8 +17,8 @@ from ..browser_manager import BrowserManager
 urllib3.disable_warnings()
 
 class HackerNewsCrawler(Crawler):
+    """hacker news"""
     def fetch(self, date_str):
-        """获取Hacker News热门内容"""
         current_time = datetime.datetime.now()
         
         try:
@@ -27,7 +27,7 @@ class HackerNewsCrawler(Crawler):
             
             if result and len(result) > 0:
                 # 缓存数据
-                cache._hset(date_str, self.crawler_name(), json.dumps(result, ensure_ascii=False))
+                cache.hset(date_str, self.crawler_name(), json.dumps(result, ensure_ascii=False))
                 return result
                 
             # 如果请求方式失败，尝试使用浏览器模拟获取
@@ -35,7 +35,7 @@ class HackerNewsCrawler(Crawler):
             result = self._fetch_with_browser(browser_manager)
             if result and len(result) > 0:
                 # 缓存数据
-                cache._hset(date_str, self.crawler_name(), json.dumps(result, ensure_ascii=False))
+                cache.hset(date_str, self.crawler_name(), json.dumps(result, ensure_ascii=False))
                 return result
                 
         except Exception as e:
