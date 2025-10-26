@@ -59,8 +59,7 @@ class EastMoneyCrawler(Crawler):
                     summary = news_item.get('summary', '').strip()
                     show_time = news_item.get('showTime', '').strip()
                     code = news_item.get('code', '').strip()
-                    
-                    url = f"https://kuaixun.eastmoney.com/detail/{code}" if code else "https://kuaixun.eastmoney.com/"
+                    url = f"https://finance.eastmoney.com/a/{code}" if code else "https://kuaixun.eastmoney.com/"
                     
                     news = {
                         'title': title,

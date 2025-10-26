@@ -119,7 +119,7 @@ class XueqiuCrawler(Crawler):
                         continue
                     
                     item_id = item.get('id')
-                    url_link = f"https://xueqiu.com/hot_event/{item_id}" if item_id else ''
+                    url_link = f"https://xueqiu.com/"
                     
                     content = item.get('content', '').strip()
                     if len(content) > 200:

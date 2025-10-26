@@ -64,15 +64,15 @@ class CLSCrawler(Crawler):
                         if article_title:
                             display_title = f"[{title}] {article_title}"
                             content = brief if brief else article_title
-                            url = jump_url if jump_url else f"https://www.cls.cn/featured"
+                            url = "https://www.cls.cn/telegraph"
                         else:
                             display_title = title
                             content = column.get('brief', '').strip()
-                            url = f"https://www.cls.cn/featured"
+                            url = f"https://www.cls.cn/telegraph"
                     else:
                         display_title = title
                         content = column.get('brief', '').strip()
-                        url = f"https://www.cls.cn/featured"
+                        url = f"https://www.cls.cn/telegraph"
                     
                     news = {
                         'title': display_title,
