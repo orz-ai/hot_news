@@ -26,11 +26,11 @@ class BaiduNewsCrawler(Crawler):
             return []
 
         json_data = resp.json()
-        contents = json_data.get("data")["cards"][0]["content"]
+        contents = json_data.get("data")["cards"][0]["content"][0]["content"]
         result = []
         cache_list = []
         for content in contents:
-            title = content.get("query")
+            title = content.get("word")
             url = content.get("url")
             desc = content.get("desc")
             score = content.get("hotScore")
