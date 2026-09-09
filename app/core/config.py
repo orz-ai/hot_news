@@ -63,6 +63,10 @@ class LLMConfig(BaseModel):
     provider: str = "openai-compatible"
     base_url: str = ""
     api_key: str = ""
+    # `codex-responses` provider 专用凭据。
+    codex_token: str = ""
+    codex_account_id: str = ""
+    stream: bool = False
     model: str = ""
     timeout: int = 60
     temperature: float = 0.3
@@ -95,7 +99,7 @@ def load_config() -> Config:
     global _config
     if _config is None:
         try:
-            with open(CONFIG_PATH, 'r') as f:
+            with open(CONFIG_PATH, 'r', encoding='utf-8') as f:
                 config_data = yaml.safe_load(f)
                 _config = Config(**config_data)
         except Exception as e:

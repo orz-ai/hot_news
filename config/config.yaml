@@ -66,11 +66,16 @@ scheduler:
   timezone: "Asia/Shanghai"
 
 llm:
-  enabled: false
-  provider: "openai-compatible"
-  base_url: "https://www.xxxx.com/v1"
-  api_key: "xxxxxx"
-  model: "DeepSeek-V4-Pro"
+  enabled: true
+  # 可选值："codex-responses"（ChatGPT Codex Responses 接口，必须使用流式响应）或
+  # "openai-compatible"（标准 /chat/completions 兼容接口）。
+  provider: "codex-responses"
+  base_url: "https://chatgpt.com/backend-api/codex/responses"
+  codex_token: ""
+  codex_account_id: ""
+  stream: true
+  api_key: ""
+  model: "gpt-5.6-terra"
   timeout: 60
   temperature: 0.3
   max_tokens: 1200
