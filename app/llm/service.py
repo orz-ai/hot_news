@@ -163,6 +163,31 @@ class HotSummaryService:
         previous_date = sorted(date_candidates)[-1]
         return cache.get_cache(self._build_date_cache_key(previous_date))
 
+    @staticmethod
+    def is_due(llm_config: Optional[LLMConfig] = None) -> bool:
+        config = llm_config or get_llm_config()
+        interval = config.summary_interval
+        if interval <= 0:
+            return True
+
+        latest_summary = cache.get_cache("llm:hot_summary:latest")
+        generated_at = (latest_summary or {}).get("generated_at")
+        if not generated_at:
+            return True
+
+        try:
+            last_time = datetime.fromisoformat(generated_at)
+        except (TypeError, ValueError):
+            return True
+
+        if last_time.tzinfo is None:
+            last_time = SHANGHAI_TZ.localize(last_time)
+
+        return (datetime.now(SHANGHAI_TZ) - last_time).total_seconds() >= interval
+
+    def should_generate_summary(self) -> bool:
+        return self.is_due(self.llm_config)
+
     def _save_summary(self, date_str: str, result: Dict[str, Any]) -> None:
         expire = self.llm_config.summary_expire
         cache.set_cache(self._build_date_cache_key(date_str), result, expire)

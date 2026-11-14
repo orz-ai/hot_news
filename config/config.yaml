@@ -80,5 +80,6 @@ llm:
   temperature: 0.3
   max_tokens: 1200
   summary_expire: 0
+  summary_interval: 43200
   summary_platforms: []
   summary_platform_news_limit: 10

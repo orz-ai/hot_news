@@ -136,8 +136,11 @@ def run_data_analysis(date_str: str):
         analyzer.get_trend_forecast(date_str, refresh=True)
 
         # 9. 生成 LLM 热点总结并缓存
-        log.info("Generating LLM hot summary...")
-        HotSummaryService().generate_summary(date_str)
+        if HotSummaryService.is_due():
+            log.info("Generating LLM hot summary...")
+            HotSummaryService().generate_summary(date_str)
+        else:
+            log.info("Skipped LLM hot summary, not due yet")
         
         log.info(f"All data analysis completed for date {date_str}")
     except Exception as e:
