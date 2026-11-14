@@ -95,11 +95,6 @@
 本 API 提供的信息可能并非始终准确或最新。用户应在依赖这些信息之前从其他平台进行验证。
 
 
-## Telegram机器人
-[链接](https://t.me/SpaceWatcherBot)
-
-你可以直接使用机器人或添加到你的群组中。如果你想自己部署，你需要在环境变量中设置好 `TG_BOT_TOKEN`，再执行下面的命令：`python3 news_tg_bot.py`
-
 ## 网站基础信息接口
 
 [https://news.orz.ai/api/v1/tools/website-meta/?url=https://v2ex.com/](https://orz.ai/api/v1/tools/website-meta/?url=https://v2ex.com/)

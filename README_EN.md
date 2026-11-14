@@ -96,13 +96,6 @@ There is currently `no explicit rate limiting` on this API, but please use it re
 
 The information provided by this API may not always be accurate or up-to-date. Users should verify the information from other platforms before relying on it.
 
-## Telegram Bot
-[Link](https://t.me/SpaceWatcherBot)
-
-You can use the bot directly or add it to your group.
-
-If you want to deploy the bot by yourself, you should set the `TG_BOT_TOKEN` in the environment variables and then run the following command: `python3 news_tg_bot.py`
-
 ## Fetch Basic Information API
 
 Method：`GET`

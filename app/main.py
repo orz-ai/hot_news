@@ -8,7 +8,6 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 import app.services.crawler as crawler
-import tg_bot as tg_bot
 from app.api.v1 import daily_news, web_tools, analysis, llm
 from app.utils.logger import log
 from app.core import db, cache
